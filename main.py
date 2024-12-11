@@ -1,5 +1,5 @@
-from offline_2player import *
-from client import Player_client
+from GUI.offline_2player import *
+from GUI.client import Player_client
 from GUI.Menu import Menu
 from GUI.Lobby import WaitingRoom
 from Values.values import *

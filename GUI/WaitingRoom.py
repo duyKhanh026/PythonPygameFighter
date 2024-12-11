@@ -2,7 +2,7 @@ import pygame
 import sys
 import json
 import threading
-from client import Player_client
+from GUI.client import Player_client
 
 class WaitingRoom2:
     def __init__(self, surface, roomCode, client_socket, room_name):

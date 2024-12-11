@@ -1,4 +1,4 @@
-from offline_2player import *
+from GUI.offline_2player import *
 import socket
 import json
 
