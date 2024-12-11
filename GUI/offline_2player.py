@@ -8,23 +8,29 @@ from classes.action import *
 from Values.values import *
 
 class Offline_2player:
-    def __init__(self, screen,  p1='', p2=''):
+    def __init__(self, screen,  p1='', p2='', online=False):
         self.count_frame = 0
         self.game_over = 0
         self.screen = screen
-        self.player1 = Character1(200, 50, character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
-        self.player2 = Character1(200, 80, character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
+        self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+        self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
         
-        if self.player1.name == '' and p1 == "Character 1":
-            self.player1 = Character1(200, 50, character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+        if self.player1.name == '' and p1 == 'Character 1':
+            self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
             print(p1)
         if self.player1.name == '' and p1 == 'Character 2':
-            self.player1 = Character2(200, 80, character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+            self.player1 = Character2(character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
 
-        if self.player2.name == '' and p2 == 'Character 2':
-            self.player2 = Character2(200, 80, character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
-        if self.player2.name == '' and p2 == 'Character 1':
-            self.player2 = Character1(200, 80, character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+        if online:
+            if self.player2.name == '' and p2 == 'Character 2':
+                self.player2 = Character2(character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+            if self.player2.name == '' and p2 == 'Character 1':
+                self.player2 = Character1(character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+        else :
+            if self.player2.name == '' and p2 == 'Character 2':
+                self.player2 = Character2(character2_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
+            if self.player2.name == '' and p2 == 'Character 1':
+                self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
 
         self.player2.name = p2
         self.player1.name = p1
@@ -35,6 +41,12 @@ class Offline_2player:
         self.settingClicked = False
         self.score = 0
         self.retrunMenu = -1
+
+    def create_character(character_type, x, y, folder, color, keys, direction):
+        if character_type == 'Character 1':
+            return Character1(200, 50, folder, x, y, color, *keys, direction)
+        elif character_type == 'Character 2':
+            return Character2(200, 80, folder, x, y, color, *keys, direction)
 
     def reset(self):
         self.count_frame = 0
@@ -140,18 +152,15 @@ class Offline_2player:
                     player.attack_cooldown_p1 = ATTACK_COOLDOWN
                     player.attack_ready_p1 = False
 
+            if player.skill_active(self.screen, self.player2 if player == self.player1 else self.player1):
+                handle_attack(player, self.player2 if player == self.player1 else self.player1, True)
+                self.pushed_side(player, self.player2 if player == self.player1 else self.player1)
+
             if player.rect.y > SCREEN_HEIGHT:
                 self.game_over = (1 if player == self.player1 else 2) 
             elif player.health <= 0:
                 self.game_over = (1 if player == self.player1 else 2) 
 
-        if self.player1.skill_active(self.screen, self.player2):
-            handle_attack(None, self.player2,1)
-            self.pushed_side(self.player1, self.player2)
-
-        if self.player2.skill_active(self.screen, self.player2):
-            handle_attack(None, self.player1,1)
-            self.pushed_side(self.player2, self.player1)
 
         self.attack_confirmation(self.player1, 10, toadoInfo)
         self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, toadoInfo)

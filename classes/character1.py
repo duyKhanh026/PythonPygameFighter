@@ -2,8 +2,8 @@ import pygame as py
 from classes.player import Player
 
 class Character1(Player): # the blue guy 
-	def __init__(self, hx, hy, strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side):
-		super().__init__(hx, hy, strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side)
+	def __init__(self, strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side):
+		super().__init__(strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side)
 		self.sp1 = [py.image.load(f'assets/{strNam}_sp{i}.png') for i in range(1, 20)]
 		self.image1 = py.image.load("assets/kill1.png")
 		self.hinh_1_list = []
@@ -72,9 +72,11 @@ class Character1(Player): # the blue guy
 		if self.skill_use(screen, player2): 
 			self.skill1 = False
 			self.state = 'NO'
+			self.dame = 10
 			self.sp1count = 0
 
 		if player2.get_hit_by_skill :
+			self.dame = 3
 			player2.JUMP_POWER = -10 - (100 - player2.health) / 7
 			player2.velocity_x = 10 + (100 - player2.health) / 7
 			player2.square_y_speed = player2.JUMP_POWER

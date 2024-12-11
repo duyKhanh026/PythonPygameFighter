@@ -2,9 +2,7 @@ import pygame as py
 from Values.values import *
 
 class Player:
-	def __init__(self, hx, hy, strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side):
-		self.health_bar_x = hx
-		self.health_bar_y = hy
+	def __init__(self, strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side):
 		self.name = ''
 		self.hitbox = 100
 		self.right = False
@@ -17,6 +15,8 @@ class Player:
 		self.set_default_values()
 		self.key_twice = 10
 		self.moveEnable = True
+		self.block_def  = False
+		self.block_kick = False
 
 	def load_images(self, strNam):
 		self.walkRight = [py.image.load(f'assets/{strNam}_running{i}.png') for i in range(1, 6)]
@@ -62,6 +62,7 @@ class Player:
 		self.stunned_ready_p1 = True
 		self.get_hit_by_skill = False
 		self.state = 'NO'
+		self.dame = 10
 
 	def redrawGameWindow(self, surface):
 		if self.state == 'ATK':
@@ -89,27 +90,21 @@ class Player:
 		self.rect.move_ip(dx, dy)
 
 	def draw(self, surface):
-		# py.draw.rect(surface, self.color, self.rect)
-		# if self.side == 'L':
-		# 	py.draw.rect(surface, self.color, py.Rect(self.rect.x + self.hitbox,self.rect.y, 100,100))
-		# else:
-		# 	py.draw.rect(surface, self.color, py.Rect(self.rect.x - self.hitbox,self.rect.y, 100,100))
-
 		self.redrawGameWindow(surface)
-		# py.draw.line(surface, (26, 243, 0), (self.rect.x, 0), (self.rect.x, 800))
-		# py.draw.line(surface, (26, 243, 0), (0, self.rect.y), (1500, self.rect.y))
-		font = py.font.SysFont(None, 16)
-		text = font.render(' (' + str(self.rect.x) + ',' + str(self.rect.y) + ')', True, (255, 255,255))
-		surface.blit(text, (self.rect.x, 10))
 
 		# Draw health bar
-		py.draw.rect(surface, (255, 0, 0), (self.health_bar_x, self.health_bar_y, self.rect.width, 10))
-		py.draw.rect(surface, (0, 255, 0), (self.health_bar_x, self.health_bar_y, int(self.rect.width * (self.health / self.max_health)), 10))
+		py.draw.rect(surface, RED, (self.rect.x, self.rect.y, self.rect.width, 10))
+		py.draw.rect(surface, GREEN, (self.rect.x, self.rect.y, int(self.rect.width * (self.health / self.max_health)), 10))
 		
-		# Draw text about the current state 
-		font = py.font.SysFont(None, 46)
-		text = font.render(' ' + self.state, True, (255, 255,255))
-		surface.blit(text, (self.rect.x, self.rect.y + self.rect.height // 2))
+		# # Draw position info
+		# font = py.font.SysFont(None, 16)
+		# text = font.render(' (' + str(self.rect.x) + ',' + str(self.rect.y) + ')', True, (255, 255,255))
+		# surface.blit(text, (self.rect.x, 10))
+
+		# # Draw text about the current state 
+		# font = py.font.SysFont(None, 46)
+		# text = font.render(' ' + self.state, True, (255, 255,255))
+		# surface.blit(text, (self.rect.x, self.rect.y + self.rect.height // 2))
 
 	def go_left(self):
 		self.right = False
@@ -152,9 +147,9 @@ class Player:
 			if key[self.atk_key]:
 				self.atkAcount = 0
 				self.state = 'ATK'
-			elif key[self.def_key]:
+			elif key[self.def_key] and not self.block_def:
 				self.state = 'DEF'
-			elif key[self.kick_key]:
+			elif key[self.kick_key] and not self.block_kick:
 				self.kicAcount = 0
 				self.state = 'KIC'
 			else:

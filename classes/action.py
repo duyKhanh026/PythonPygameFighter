@@ -3,7 +3,6 @@ import pygame as py
 ATTACK_COOLDOWN = 500  # Thời gian hồi của đòn đánh (milliseconds)
 STUNNED_COOLDOWN = 450 
 PUSH_COOLDOWN = 600 
-DAMAGE = 10
 TEXT_COLOR = (255, 255, 255)
 
 def check_collision(p1, p2):
@@ -13,12 +12,9 @@ def check_collision(p1, p2):
 		return py.Rect(p1.rect.x - p1.hitbox,p1.rect.y, 100,100).colliderect(p2.rect)
 
 
-def handle_attack(attacker, victim, newdame=None):
-	if attacker == None or check_collision(attacker, victim) :
-		if (newdame==None):
-			victim.health -= DAMAGE
-		else:
-			victim.health -= newdame
+def handle_attack(attacker, victim, spSkill=False):
+	if spSkill or check_collision(attacker, victim) :
+		victim.health -= attacker.dame
 		return True
 	return False
 
