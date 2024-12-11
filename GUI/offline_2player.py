@@ -111,37 +111,20 @@ class Offline_2player:
         return False
 
     def backgr(self):
-        self.screen.fill(BLACK)
+        self.screen.fill(GREEN1)
 
-        # Vẽ hình chữ nhật mờ trong suốt
-        bg_rect = py.Surface((SCREEN_WIDTH - 500, SCREEN_HEIGHT), py.SRCALPHA)
-        bg_rect.fill((157, 157, 157, 0))  # Màu với alpha = 128
-        self.screen.blit(bg_rect, (250, 600))  # Vị trí và kích thước của hình chữ nhật
-
-        bg_rect = py.Surface((SCREEN_WIDTH - 1350, SCREEN_HEIGHT-750), py.SRCALPHA)
-        bg_rect.fill((157, 157, 157, 0))  # Màu với alpha = 128
-        self.screen.blit(bg_rect, (100, 400))  # Vị trí và kích thước của hình chữ nhật
-
-        bg_rect = py.Surface((SCREEN_WIDTH - 1200, SCREEN_HEIGHT-700), py.SRCALPHA)
-        bg_rect.fill((157, 157, 157, 0))  # Màu với alpha = 128
-        self.screen.blit(bg_rect, (650, 250))  # Vị trí và kích thước của hình chữ nhật 
-
-        bg_rect = py.Surface((SCREEN_WIDTH - 1250, SCREEN_HEIGHT-700), py.SRCALPHA)
-        bg_rect.fill((157, 157, 157, 0))  # Màu với alpha = 128
-        self.screen.blit(bg_rect, (1150, 350))  # Vị trí và kích thước của hình chữ nhật 
-
-    def _update_ui(self):
-        self.backgr()
-
-
+        py.draw.rect(self.screen, GRAY, (0, ground_height, SCREEN_WIDTH, ground_height))
 
         # # vẽ sọc trắng lên màn hình
         line_spacing = 50
         for y in range(0, SCREEN_HEIGHT, line_spacing):
-            py.draw.line(self.screen, WHITE, (0, y), (SCREEN_WIDTH, y))
+            py.draw.line(self.screen, BLACK, (0, y), (SCREEN_WIDTH, y))
         line_spacing_vertical = 50
         for x in range(0, SCREEN_WIDTH, line_spacing_vertical):
-            py.draw.line(self.screen, WHITE, (x, 0), (x, SCREEN_HEIGHT))
+            py.draw.line(self.screen, BLACK, (x, 0), (x, SCREEN_HEIGHT))
+
+    def _update_ui(self):
+        self.backgr()
 
         toadoInfo = 80
 
@@ -165,6 +148,10 @@ class Offline_2player:
         if self.player1.skill_active(self.screen, self.player2):
             handle_attack(None, self.player2,1)
             self.pushed_side(self.player1, self.player2)
+
+        if self.player2.skill_active(self.screen, self.player2):
+            handle_attack(None, self.player1,1)
+            self.pushed_side(self.player2, self.player1)
 
         self.attack_confirmation(self.player1, 10, toadoInfo)
         self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, toadoInfo)
@@ -274,7 +261,6 @@ class Offline_2player:
 
         for event in py.event.get():
             if event.type == py.QUIT:
-                #py.quit()
                 self.game_over = 1
             elif event.type == py.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = py.mouse.get_pos()
@@ -289,6 +275,3 @@ class Offline_2player:
     def start(self):
         while True:
             self.run()
-
-def distance_2d(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)

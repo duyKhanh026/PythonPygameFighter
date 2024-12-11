@@ -1,4 +1,5 @@
 import pygame as py
+from Values.values import *
 
 class Player:
 	def __init__(self, hx, hy, strNam, x, y, color, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key, side):
@@ -161,41 +162,35 @@ class Player:
 
 	def move_logic(self, key):
 		# Áp dụng trọng lực
-		# if not self.on_ground or self.rect.y >= 600 - self.rect.height:
 		self.square_y_speed += self.GRAVITY
 		self.rect.y += self.square_y_speed
 
-		
+		if self.rect.y >= ground_height - self.rect.height:
+			self.rect.y = ground_height - self.rect.height
+			self.square_y_speed = 0
+			self.on_ground = True
 
 		# Kiểm tra va chạm với mặt đất ma
-		if self.rect.x > 150 and self.rect.x < 1250:
-			if self.rect.y >= 600 - self.rect.height:
-				self.rect.y = 600 - self.rect.height
-				self.square_y_speed = 0
-				self.on_ground = True
-		else:
-			self.on_ground = False
-		player_rect = self.rect
+		# if self.rect.x > 150 and self.rect.x < 1250:
+		# 	if self.rect.y >= 600 - self.rect.height:
+		# 		self.rect.y = 600 - self.rect.height
+		# 		self.square_y_speed = 0
+		# 		self.on_ground = True
+		# else:
+		# 	self.on_ground = False
+		# player_rect = self.rect
 		
-		for rect_pos_x, rect_pos_y, rect_width, rect_height in [(350, 600, 1500 - 650, 800), 
-																(150, 375, 1500 - 1430, 800 - 750), 
-																(700, 250, 1500 - 1240, 800 - 700), 
-																(1175, 325, 1500 - 1275, 800 - 700)]:
-			rect = py.Rect(rect_pos_x, rect_pos_y, rect_width, rect_height)
-			if player_rect.colliderect(rect):
-				# Xử lý va chạm ở đây
-				# Ví dụ: khi va chạm, bạn có thể đặt vị trí của người chơi để không đi qua hình chữ nhật
-				if self.square_y_speed > 0:  # Nếu đối tượng đang đi xuống
-					self.rect.bottom = rect.top  # Đặt vị trí dưới cùng của đối tượng bằng vị trí trên cùng của hình chữ nhật
-					self.square_y_speed = 0
-					self.on_ground = True
-					  # Đặt vận tốc y về 0 để ngăn đối tượng tiếp tục đi xuống
-				# elif self.square_y_speed < 0:  # Nếu đối tượng đang đi lên
-				# 	self.rect.top = rect.bottom  # Đặt vị trí trên cùng của đối tượng bằng vị trí dưới cùng của hình chữ nhật
-				# 	self.square_y_speed = 0  # Đặt vận tốc y về 0 để ngăn đối tượng tiếp tục đi lên
-
-		
-
+		# for rect_pos_x, rect_pos_y, rect_width, rect_height in [(350, 600, 1500 - 650, 800), 
+		# 														(150, 375, 1500 - 1430, 800 - 750), 
+		# 														(700, 250, 1500 - 1240, 800 - 700), 
+		# 														(1175, 325, 1500 - 1275, 800 - 700)]:
+		# 	rect = py.Rect(rect_pos_x, rect_pos_y, rect_width, rect_height)
+		# 	if player_rect.colliderect(rect):
+		# 		# Xử lý va chạm ở đây
+		# 		if self.square_y_speed > 0:  # Nếu đối tượng đang đi xuống
+		# 			self.rect.bottom = rect.top  # Đặt vị trí dưới cùng của đối tượng bằng vị trí trên cùng của hình chữ nhật
+		# 			self.square_y_speed = 0
+		# 			self.on_ground = True
 
 		# Giới hạn không cho khối vuông đi quá biên
 		if self.rect.x < 0:
@@ -249,14 +244,7 @@ class Player:
 		if self.on_ground: 
 			self.Max_jump = 2
 			self.key_twice = 10
-			
-		# else:
-		# 	self.click_jump_enable = True
-		# 	if self.on_ground: 
-		# 		self.Max_jump = 2
-
 		
-
 	def __str__(self):   # Tạo một chuỗi đại diện cho đối tượng Player
 		player_info = [
 			str(self.speed), # 0
