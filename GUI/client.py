@@ -34,7 +34,7 @@ class Player_client:
 
     def run(self):
         while self.game.game_over == 0:
-            self.game.run(None, True)
+            self.game.run(True)
             self.send(str(self.game.player1))
 
         self.send(self.DISCONNECT_MESSAGE)

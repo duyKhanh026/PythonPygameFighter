@@ -9,6 +9,8 @@ class Character1(Player): # the blue guy
 		self.hinh_1_list = []
 		self.lengt = int(600 / 50)
 		self.startX = 0
+		self.energy_recover = 0.3
+		self.time_to_active_skill = 50
 
 		# Thêm 10 biến hình 1 vào list
 		for i in range(0, self.lengt):
@@ -23,7 +25,7 @@ class Character1(Player): # the blue guy
 			self.walkCount = 0
 		if self.kicAcount + 1 >= 42: # 7frame
 			self.kicAcount = 0
-		if self.sp1count + 1 >= 114: # 19 frame
+		if self.sp1count + 1 >= self.time_to_active_skill: # 19 frame
 			self.skill1 = True
 			self.sp1count = 113
 		if self.idlecount >= 30:

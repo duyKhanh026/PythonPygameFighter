@@ -31,6 +31,9 @@ class Player:
 		self.side = side
 		self.max_health = 100
 		self.health = self.max_health
+		self.max_energy = 100
+		self.energy = self.max_energy
+		self.energy_recover = 0.2
 
 	def set_control_keys(self, move_left_key, move_right_key, jump_key, atk_key, def_key, kick_key, sp1_key):
 		self.move_left_key = move_left_key
@@ -95,16 +98,12 @@ class Player:
 		# Draw health bar
 		py.draw.rect(surface, RED, (self.rect.x, self.rect.y, self.rect.width, 10))
 		py.draw.rect(surface, GREEN, (self.rect.x, self.rect.y, int(self.rect.width * (self.health / self.max_health)), 10))
+		# Draw health bar
+		py.draw.rect(surface, GRAY, (self.rect.x, self.rect.y - 10, self.rect.width, 10))
+		py.draw.rect(surface, BLUE, (self.rect.x, self.rect.y - 10, int(self.rect.width * (self.energy / self.max_energy)), 10))
+		if self.energy < self.max_energy:
+			self.energy += self.energy_recover
 		
-		# # Draw position info
-		# font = py.font.SysFont(None, 16)
-		# text = font.render(' (' + str(self.rect.x) + ',' + str(self.rect.y) + ')', True, (255, 255,255))
-		# surface.blit(text, (self.rect.x, 10))
-
-		# # Draw text about the current state 
-		# font = py.font.SysFont(None, 46)
-		# text = font.render(' ' + self.state, True, (255, 255,255))
-		# surface.blit(text, (self.rect.x, self.rect.y + self.rect.height // 2))
 
 	def go_left(self):
 		self.right = False
@@ -140,9 +139,10 @@ class Player:
 		if self.move_left_key == None:
 			return 
 
-		if key[self.sp1_key] and not self.skill1:
+		if key[self.sp1_key] and not self.skill1 and self.energy >= self.max_energy:
 			self.state = 'SP1'
 			self.sp1count = 0
+			self.energy = 0
 		elif self.state == 'DEF' or self.state == 'NO':
 			if key[self.atk_key]:
 				self.atkAcount = 0

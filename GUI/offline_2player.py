@@ -39,8 +39,8 @@ class Offline_2player:
         
         self.settingBtn = py.image.load(f'assets/setting.png')
         self.settingClicked = False
-        self.score = 0
         self.retrunMenu = -1
+        self.infoMode = False
 
     def create_character(character_type, x, y, folder, color, keys, direction):
         if character_type == 'Character 1':
@@ -61,35 +61,38 @@ class Offline_2player:
     # thực hiện xác nhận player thực hiện đánh thường hoặc đá
     def attack_confirmation(self, player, x, y):
         if player.attack_cooldown_p1 > 0:
-            draw_attack_cooldown(self.screen, player.attack_cooldown_p1, (x, y))
+            if self.infoMode: 
+                draw_attack_cooldown(self.screen, player.attack_cooldown_p1, (x, y))
             player.attack_cooldown_p1 -= self.clock.get_time()
         elif player.state == 'ATK' or player.state == 'KIC':
             player.attack_ready_p1 = True
             player.attack_cooldown_p1 = 0
             player.state = 'NO'
-        else: 
+        elif self.infoMode: 
             draw_attack_ready(self.screen, (x, y))
 
     # xác nhận player bị choáng
     def stunning_confirmation(self, player, x, y):
         if player.stunned_cooldown_p1 > 0:
-            draw_stunned_cooldown(self.screen, player.stunned_cooldown_p1, (x, y))
+            if self.infoMode: 
+                draw_stunned_cooldown(self.screen, player.stunned_cooldown_p1, (x, y))
             player.stunned_cooldown_p1 -= self.clock.get_time()
         elif not player.stunned_ready_p1:
             player.stunned_ready_p1 = True
             player.JUMP_POWER = -15
-        else:
+        elif self.infoMode:
             draw_stunned_ready(self.screen, (x, y)) 
 
     # xác nhận player bị đá 
     def kicked_confirmation(self, player, x, y):
         if player.push_cooldown_p1 > 0:
-            draw_push_cooldown(self.screen, player.push_cooldown_p1, (x, y))
+            if self.infoMode: 
+                draw_push_cooldown(self.screen, player.push_cooldown_p1, (x, y))
             player.push_cooldown_p1 -= self.clock.get_time()
         elif not player.push_ready_p1:
             player.push_ready_p1 = True
             player.state = 'NO'
-        else:
+        elif self.infoMode:
             draw_push_ready(self.screen, (x, y))
 
     # gán phía bị đẩy cho player
@@ -166,9 +169,7 @@ class Offline_2player:
         self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, toadoInfo)
 
         self.player_attack(self.player1, self.player2)
-        if self.player_attack(self.player2, self.player1):
-            self.score += 1
-            self.hitpoint = True
+        self.player_attack(self.player2, self.player1)
 
         self.player_kick(self.player1, self.player2)
         self.player_kick(self.player2, self.player1)
@@ -178,6 +179,22 @@ class Offline_2player:
 
         self.kicked_confirmation(self.player1, 10, toadoInfo + 50)
         self.kicked_confirmation(self.player2, SCREEN_WIDTH - 110, toadoInfo + 50)
+
+        if self.infoMode:
+            for player in [self.player1, self.player2]:
+                # Draw position info
+                font = py.font.SysFont(None, 16)
+                text = font.render(' (' + str(player.rect.x) + ',' + str(player.rect.y) + ')', True, (255, 255,255))
+                self.screen.blit(text, (player.rect.x, 10))
+
+                # Draw text about the current state 
+                font = py.font.SysFont(None, 46)
+                text = font.render(' ' + player.state, True, BLACK)
+                self.screen.blit(text, (player.rect.x, player.rect.y + player.rect.height))
+
+                py.draw.line(self.screen, GREEN, (0, player.rect.y), (SCREEN_WIDTH, player.rect.y), 1)
+                py.draw.line(self.screen, GREEN, (player.rect.x, 0), (player.rect.x, SCREEN_HEIGHT), 1)
+
 
     def _update_ui_client(self):
         self.backgr()
@@ -227,26 +244,24 @@ class Offline_2player:
         py.draw.line(self.screen, WHITE, rect.topright, rect.bottomright)
         py.draw.line(self.screen, WHITE, rect.bottomright, rect.bottomleft)
         py.draw.line(self.screen, WHITE, rect.bottomleft, rect.topleft)
-        font = py.font.SysFont("Arial", 32)
+        font = py.font.SysFont(font_use, 32)
         text = font.render('Are You Quit?', True, RED)
         self.screen.blit(text, (400, 150))
         self.draw_button("YES" , 600, 150)
 
+        text = font.render('InfoMode', True, RED)
+        self.screen.blit(text, (400, 250))
+        self.draw_button("NO" if self.infoMode else "YES" , 600, 250)
+
     # Function to draw a button
     def draw_button(self, text, x, y):
-        font_button = py.font.SysFont("Arial", 24)
-        # Button dimensions and colors
-        BUTTON_WIDTH = 200
-        BUTTON_HEIGHT = 40
-        BUTTON_MARGIN = 40  # Increased margin between buttons
-        BUTTON_COLOR = (255, 255, 255)  # White color for buttons
-        BUTTON_TEXT_COLOR = (0, 0, 0)  # Black color for text on buttons
+        font_button = py.font.SysFont(font_use, 24)
         py.draw.rect(self.screen, BUTTON_COLOR, (x, y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=20)
         text_surface = font_button.render(text, True, BUTTON_TEXT_COLOR)
         text_rect = text_surface.get_rect(center=(x + BUTTON_WIDTH // 2, y + BUTTON_HEIGHT // 2))
         self.screen.blit(text_surface, text_rect)
 
-    def run(self, action=None , online=False):
+    def run(self, online=False):
 
         if self.game_over == 0:
             if online:
@@ -271,6 +286,8 @@ class Offline_2player:
         for event in py.event.get():
             if event.type == py.QUIT:
                 self.game_over = 1
+                py.quit()
+                exit(1)
             elif event.type == py.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = py.mouse.get_pos()
                 if 10 <= mouse_x <= (10 + 64):
@@ -280,7 +297,11 @@ class Offline_2player:
                     if 600 <= mouse_x <= (600 + 200):
                         if 150 <= mouse_y <= (150 + 40):
                             self.retrunMenu = 1
+                    if 600 <= mouse_x <= (600 + 200):
+                        if 250 <= mouse_y <= (250 + 40):
+                            self.infoMode = not self.infoMode
+                            self.retrunMenu = 2
 
     def start(self):
-        while True:
+        while self.game_over == 0:
             self.run()

@@ -11,6 +11,12 @@ GREEN1 = (109, 201, 194)
 BLUE   = (0, 0, 255)
 GRAY   = (175, 189, 196) 
 
+BUTTON_WIDTH = 200
+BUTTON_HEIGHT = 40
+BUTTON_MARGIN = 40  
+BUTTON_COLOR = WHITE
+BUTTON_TEXT_COLOR = BLACK
+
 ground_height = 600
 
 menu_background = "GUI/background.jpg"
