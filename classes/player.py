@@ -266,7 +266,8 @@ class Player:
 			str(self.energy),         # 22
 			str(self.skill1),         # 23
 			str(self.hitbox),         # 24
-			str(self.dame)            # 25
+			str(self.dame),            # 25
+			str(self.energy_recover)  # 26
 		]
 		return ",".join(player_info)
 
@@ -298,3 +299,4 @@ class Player:
 		self.skill1         = values[23].lower() == 'true'
 		self.hitbox         = int(values[24])
 		self.dame           = int(values[25])
+		self.energy_recover = float(values[26])

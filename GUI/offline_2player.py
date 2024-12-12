@@ -101,8 +101,8 @@ class Offline_2player:
     def player_kick(self, p1, p2, online=False):
         if p1.state == 'KIC' and p2.state != 'ATK':
             if p1.kicAcount > 28 and p2.state != 'PUS_R' and p2.state != 'PUS_L':
-                if handle_attack(p1, p2 ):
-                    self.pushed_side(p1, p2, online=online)
+                if handle_attack(p1, p2, online=online):
+                    self.pushed_side(p1, p2)
                     p2.velocity_x = 8.4
                     p2.push_cooldown_p1 = PUSH_COOLDOWN
                     p2.push_ready_p1 = False
@@ -247,9 +247,12 @@ class Offline_2player:
 
         for event in py.event.get():
             if event.type == py.QUIT:
-                self.game_over = 1
-                py.quit()
-                exit(1)
+                self.game_over = -1
+                if self.isOnline:
+                    return
+                else:
+                    py.quit()
+                    exit(1)
             elif event.type == py.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = py.mouse.get_pos()
                 if btn_setting[0] <= mouse_x <= (btn_setting[0] + box_setting):
@@ -260,6 +263,7 @@ class Offline_2player:
                         # Back to the Menu
                         if btn_gotomenu[1] <= mouse_y <= (btn_gotomenu[1] + BUTTON_HEIGHT):
                             self.retrunMenu = 1
+                            self.game_over = -1
                         # Turn on/off information Mode
                         if btn_infor[1] <= mouse_y <= (btn_infor[1] + BUTTON_HEIGHT):
                             self.infoMode = not self.infoMode

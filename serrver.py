@@ -43,8 +43,6 @@ def handle_client(conn, addr):
 
 	# conn.close()
 
-
-
 def handle_room_client(conn, addr):
 	print(f"[NEW ROOM CONNECTION] {addr} connected.")
 	connected = True
@@ -86,14 +84,6 @@ def handle_room_client(conn, addr):
 				except json.JSONDecodeError as e:
 					print(f"[ERROR] Invalid JSON format: {e}")
 
-		
-
-		# Sau khi người chơi rời khỏi phòng, cập nhật lại số lượng phòng
-	# room_code = my_string_list.get_roomcode_by_port(str(get_portt(addr)))
-	# if room_code:
-	# 	my_string_list.remove_string(str(get_portt(addr)))
-	# 	my_string_list.update_room_code_count(room_code, -1)
-
 	conn.close()
 
 def extract_after_chat(string):
@@ -111,6 +101,7 @@ def extract_pler(string):
 		return string[index + len(keyword):]
 	else:
 		return None
+
 def handle_exit_room(conn, addr):
 	# Xử lý khi client muốn rời phòng
 	# Ví dụ: thông báo trạng thái và loại bỏ client khỏi danh sách kết nối
@@ -119,16 +110,11 @@ def handle_exit_room(conn, addr):
 
 def handle_room_data(data ,addr):
 	# Xử lý dữ liệu của room ở đây
-	# Ví dụ:
 	room_code = data.get("code")
 	room_name = data.get("name")
 	room_player = data.get("player")
 	print(f"Room Code: {room_code}, Name: {room_name}, Player: {room_player}")
 	my_string_list.add_string(str(get_portt(addr)), str(room_name), str(room_player), 'tao ko bt', str(room_code))
-
-	# Thực hiện các thao tác khác tùy thuộc vào dữ liệu nhận được
-
-
 
 def get_portt(adr):
 	return adr[1]
@@ -138,8 +124,6 @@ def start():
 	print(f"[LISTENING] Server is listening on {SERVER}")
 	while True:
 		conn, addr = server.accept()
-		# thread = threading.Thread(target=handle_room_client, args=(conn, addr))
-		# thread.start()
 		conns.append(conn)
 		thread1= threading.Thread(target=handle_room_client, args=(conn, addr))
 		thread1.start()
@@ -148,22 +132,3 @@ def start():
 
 print("[STARTING] server is starting...")
 start()
-
-# def start():
-#     server.listen()
-#     print(f"[LISTENING] Server is listening on {SERVER}")
-#     while True:
-#         conn, addr = server.accept()
-#         client_type = conn.recv(HEADER).decode(FORMAT)
-#         if client_type == "client":
-#             threading.Thread(target=handle_client, args=(conn, addr)).start()
-#         elif client_type == "room":
-#             threading.Thread(target=handle_room_client, args=(conn, addr)).start()
-#         else:
-#             print(f"Unknown client type from {addr}")
-#             conn.close()
-
-#         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
-
-# print("[STARTING] server is starting...")
-# start()

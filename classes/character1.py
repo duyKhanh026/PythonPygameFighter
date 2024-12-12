@@ -9,8 +9,10 @@ class Character1(Player): # the blue guy
 		self.hinh_1_list = []
 		self.lengt = int(600 / 50)
 		self.startX = 0
+		self.startY = 0
 		self.energy_recover = 0.3
 		self.time_to_active_skill = 50
+
 
 		# Thêm 10 biến hình 1 vào list
 		for i in range(0, self.lengt):
@@ -47,6 +49,7 @@ class Character1(Player): # the blue guy
 		if not self.skill1:
 			self.spam_l = self.lengt
 			self.startX = self.rect.x + self.rect.width
+			self.startY = self.rect.y
 			return False
 		# Vẽ hình 1
 		for i in range(0, self.lengt - self.spam_l):
@@ -54,7 +57,7 @@ class Character1(Player): # the blue guy
 				x = self.startX + i * 50
 			else: 
 				x = (self.startX - self.rect.width - 50) - i * 50
-			y = self.rect.y
+			y = self.startY
 			objA = py.Rect(x, y, 50, 150)
 			surface.blit(self.hinh_1_list[i], (x, y))
 			if (objA.colliderect(player2.rect)):
@@ -79,8 +82,8 @@ class Character1(Player): # the blue guy
 
 		if player2.get_hit_by_skill :
 			self.dame = 3
-			player2.JUMP_POWER = -10 - (100 - player2.health) / 7
-			player2.velocity_x = 10 + (100 - player2.health) / 7
+			player2.JUMP_POWER = -10
+			player2.velocity_x = 10
 			player2.square_y_speed = player2.JUMP_POWER
 			player2.on_ground = False
 			player2.get_hit_by_skill = False
