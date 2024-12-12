@@ -9,13 +9,12 @@ from Values.values import *
 
 class Offline_2player:
     def __init__(self, screen,  p1, p2, online=False):
-        self.count_frame = 0
         self.game_over = 0
         self.screen = screen
         self.isOnline = online
         self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
-        
+
         self.player2.name = p2
         self.player1.name = p1
 
@@ -28,30 +27,31 @@ class Offline_2player:
         self.clock = py.time.Clock()
 
     def setCharacter(self):
-        if self.player1.name == 'Character 1':
+        p1_name = self.player1.name
+        p2_name = self.player2.name
+        if p1_name == 'Character 1':
             self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
-        if self.player1.name == 'Character 2':
+        else:
             self.player1 = Character2(character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         if self.isOnline:
-            if self.player2.name == 'Character 2':
+            if p2_name == 'Character 2':
                 self.player2 = Character2(character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
-            if self.player2.name == 'Character 1':
+            else :
                 self.player2 = Character1(character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
         else :
-            if self.player2.name == 'Character 2':
+            if p2_name == 'Character 2':
                 self.player2 = Character2(character2_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
-            if self.player2.name == 'Character 1':
+            else :
                 self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
+        # đặt lại
+        self.player1.name = p1_name
+        self.player2.name = p2_name
 
     def reset(self):
-        self.count_frame = 0
         self.game_over = 0
         self.screen = py.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        py.display.set_caption('Demo')
-        self.player1 = Character1(200, 50, 'blue/stickman_blade', 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
-        self.player2 = Character2(200, 80, 'purple/stickman', 1200, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_KP1, py.K_KP2, py.K_KP3, py.K_KP4, 'R')
         self.clock = py.time.Clock()
-        self.score = 0
+        self.setCharacter()
 
     # thực hiện xác nhận player thực hiện đánh thường hoặc đá
     def attack_confirmation(self, player, x, y):
@@ -182,7 +182,7 @@ class Offline_2player:
                 # Draw text about the current state 
                 font = py.font.SysFont(None, 46)
                 text = font.render(' ' + player.state, True, BLACK)
-                self.screen.blit(text, (player.rect.x, player.rect.y + player.rect.height + 20))
+                self.screen.blit(text, (player.rect.x, player.rect.y + player.rect.height + 30))
 
                 py.draw.line(self.screen, GREEN, (0, player.rect.y), (SCREEN_WIDTH, player.rect.y), 1)
                 py.draw.line(self.screen, GREEN, (player.rect.x, 0), (player.rect.x, SCREEN_HEIGHT), 1)
@@ -215,9 +215,7 @@ class Offline_2player:
         self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, 30)
 
         self.player_attack(self.player1, self.player2)
-        if self.player_attack(self.player2, self.player1):
-            self.score += 1
-            self.hitpoint = True
+        self.player_attack(self.player2, self.player1)
 
         self.player_kick(self.player1, self.player2)
         self.player_kick(self.player2, self.player1)
@@ -269,7 +267,6 @@ class Offline_2player:
         self.screen.blit(text_surface, text_rect)
 
     def run(self, online=False):
-        print(py.mouse.get_pos())
         if self.game_over == 0:
             if online:
                 self._update_ui_client()
@@ -310,6 +307,7 @@ class Offline_2player:
                         # Back to the game
                         if btn_play[1] <= mouse_y <= (btn_play[1] + BUTTON_HEIGHT):
                             self.settingClicked = not self.settingClicked
+                            self.reset()
 
                     # Click to choice Fighter
                     if 400 <= mouse_y <= 555:
