@@ -7,21 +7,18 @@ import json
 from GUI.create_room import CreateRoomForm
 from classes.hostData import StringList
 from GUI.WaitingRoom import WaitingRoom2
+from GUI.client import Player_client
+from Values.values import *
 
 class WaitingRoom:
     def __init__(self, surface):
-
-        # Kích thước màn hình
-        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = surface.get_size()
-
         self.screen = surface
         self.default_font_size = 30
-        self.font_path = "Font/1FTV-Rexilya.otf"
-        self.font_vietnamese = pygame.font.Font(self.font_path, self.default_font_size)
+        self.font_vietnamese = pygame.font.SysFont(font_use, self.default_font_size)
 
         # Tải hình ảnh nền
-        self.background_image = pygame.image.load("GUI/background.jpg")
-        self.background_image = pygame.transform.scale(self.background_image, (self.SCREEN_WIDTH - 240, self.SCREEN_HEIGHT - 10))
+        self.background_image = pygame.image.load(menu_background)
+        self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH - 240, SCREEN_WIDTH - 10))
 
         # Kích thước cửa sổ pygame
         self.window_width, self.window_height = surface.get_size()
@@ -34,16 +31,9 @@ class WaitingRoom:
         os.environ['SDL_VIDEO_WINDOW_POS'] = f"{self.x_pos},{self.y_pos}"
 
         # Chọn font từ các font có sẵn trong hệ thống
-        self.font_title = pygame.font.Font(self.font_path, 108)
-        self.font_button = pygame.font.Font(self.font_path, 30)
-        self.font_player = pygame.font.Font(self.font_path, 40)
-
-        # Kích thước và màu sắc của nút
-        self.BUTTON_WIDTH = 200
-        self.BUTTON_HEIGHT = 40
-        self.BUTTON_MARGIN = 122  # Khoảng cách tăng giữa các nút
-        self.BUTTON_COLOR = (255, 255, 255)  # Màu trắng cho nút
-        self.BUTTON_TEXT_COLOR = (0, 0, 0)  # Màu đen cho chữ trên nút
+        self.font_title = pygame.font.SysFont(font_use, 108)
+        self.font_button = pygame.font.SysFont(font_use, 30)
+        self.font_player = pygame.font.SysFont(font_use, 40)
 
         # Biến lưu trữ index của hàng được chọn
         self.selected_index = -1
@@ -92,7 +82,7 @@ class WaitingRoom:
         self.scroll_pos = 0
 
         # Tính toán chiều cao của bảng
-        self.table_height = self.SCREEN_HEIGHT - 155
+        self.table_height = SCREEN_HEIGHT - 155
 
         # Biến cờ để theo dõi trạng thái của việc nhấn chuột
         self.clicked = False
@@ -103,8 +93,8 @@ class WaitingRoom:
     def draw_alert(self, message):
         # Kích thước và vị trí của hộp thông báo
         alert_width, alert_height = 400, 200
-        alert_x = (self.SCREEN_WIDTH - alert_width) // 2
-        alert_y = (self.SCREEN_HEIGHT - alert_height) // 2
+        alert_x = (SCREEN_WIDTH - alert_width) // 2
+        alert_y = (SCREEN_HEIGHT - alert_height) // 2
 
         # Vẽ hộp thông báo
         pygame.draw.rect(self.screen, (255, 0, 0), (alert_x, alert_y, alert_width, alert_height), border_radius=20)
@@ -127,9 +117,9 @@ class WaitingRoom:
 
     # Hàm để vẽ một nút
     def draw_button(self, text, x, y):
-        pygame.draw.rect(self.screen, self.BUTTON_COLOR, (x, y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT), border_radius=20)
-        text_surface = self.font_button.render(text, True, self.BUTTON_TEXT_COLOR)
-        text_rect = text_surface.get_rect(center=(x + self.BUTTON_WIDTH // 2, y + self.BUTTON_HEIGHT // 2))
+        pygame.draw.rect(self.screen, BUTTON_COLOR, (x, y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=20)
+        text_surface = self.font_button.render(text, True, BUTTON_TEXT_COLOR)
+        text_rect = text_surface.get_rect(center=(x + BUTTON_WIDTH // 2, y + BUTTON_HEIGHT // 2))
         self.screen.blit(text_surface, text_rect)
 
     # Hàm để vẽ giao diện phòng chờ
@@ -139,11 +129,11 @@ class WaitingRoom:
 
         # Tiêu đề phòng chờ
         waiting_title = self.font_title.render("LOBBY", True, (255, 255, 255))
-        title_rect = waiting_title.get_rect(center=(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 8))
+        title_rect = waiting_title.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 8))
         self.screen.blit(waiting_title, title_rect)
 
         # Tính toán kích thước của bảng
-        table_width = self.SCREEN_WIDTH - 240
+        table_width = SCREEN_WIDTH - 240
 
         # Vẽ bảng để hiển thị danh sách phòng
         table_rect = pygame.Rect(0, 150, table_width, self.table_height)
@@ -175,10 +165,8 @@ class WaitingRoom:
             room_name_text_rect = room_name_text.get_rect(left=room_rect.left , centery=room_rect.centery)
             player_count_text_rect = player_count_text.get_rect(right=room_rect.right - 10, centery=room_rect.centery)
 
-            spacing = 10
-
-            room_name_text_rect.width = room_rect.width * 1/3 - spacing
-            player_count_text_rect.width = room_rect.width * 1/3 - spacing
+            room_name_text_rect.width = room_rect.width * 1/3 - 10
+            player_count_text_rect.width = room_rect.width * 1/3 - 10
 
             room_name_text_rect.right = room_name_text_rect.left + room_name_text_rect.width
             player_count_text_rect.left = player_count_text_rect.right - player_count_text_rect.width
@@ -203,9 +191,9 @@ class WaitingRoom:
             thumb_rect = pygame.Rect(scrollbar_rect.left + 5, scrollbar_rect.top + thumb_pos, 10, thumb_height)
             pygame.draw.rect(self.screen, (100, 100, 100), thumb_rect)
 
-        self.draw_button("Join Room", 2.34 * (self.SCREEN_WIDTH // 3) + self.BUTTON_MARGIN, self.SCREEN_HEIGHT // 3)
-        self.draw_button("Create Room", 2.34 * (self.SCREEN_WIDTH // 3) + self.BUTTON_MARGIN, self.SCREEN_HEIGHT // 3 + (self.BUTTON_HEIGHT + self.BUTTON_MARGIN))
-        self.draw_button("Back", 2.34 * (self.SCREEN_WIDTH // 3) + self.BUTTON_MARGIN, self.SCREEN_HEIGHT // 3 + 2 * (self.BUTTON_HEIGHT + self.BUTTON_MARGIN))
+        self.draw_button("Join Room",   2.5 * (SCREEN_WIDTH // 3) + BUTTON_MARGIN, SCREEN_HEIGHT // 3)
+        self.draw_button("Create Room", 2.5 * (SCREEN_WIDTH // 3) + BUTTON_MARGIN, SCREEN_HEIGHT // 3 + (BUTTON_HEIGHT + BUTTON_MARGIN))
+        self.draw_button("Back",        2.5 * (SCREEN_WIDTH // 3) + BUTTON_MARGIN, SCREEN_HEIGHT // 3 + 2 * (BUTTON_HEIGHT + BUTTON_MARGIN))
         pygame.display.flip()
 
     def run(self):
@@ -225,21 +213,21 @@ class WaitingRoom:
                 elif event.button == 1:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     # Check which button the player clicked
-                    if 2.34 * (self.SCREEN_WIDTH // 3) + self.BUTTON_MARGIN <= mouse_x <= 2.34 * (self.SCREEN_WIDTH // 3) + self.BUTTON_MARGIN + self.BUTTON_WIDTH:
-                        if self.SCREEN_HEIGHT // 3 <= mouse_y <= self.SCREEN_HEIGHT // 3 + self.BUTTON_HEIGHT:
+                    if 2.34 * (SCREEN_WIDTH // 3) + BUTTON_MARGIN <= mouse_x <= 2.34 * (SCREEN_WIDTH // 3) + BUTTON_MARGIN + BUTTON_WIDTH:
+                        if SCREEN_HEIGHT // 3 <= mouse_y <= SCREEN_HEIGHT // 3 + BUTTON_HEIGHT:
                             self.option = 1
-                        if self.SCREEN_HEIGHT // 3 + (self.BUTTON_HEIGHT + self.BUTTON_MARGIN) <= mouse_y <= self.SCREEN_HEIGHT // 3 + (self.BUTTON_HEIGHT + self.BUTTON_MARGIN) + self.BUTTON_HEIGHT:
+                        if SCREEN_HEIGHT // 3 + (BUTTON_HEIGHT + BUTTON_MARGIN) <= mouse_y <= SCREEN_HEIGHT // 3 + (BUTTON_HEIGHT + BUTTON_MARGIN) + BUTTON_HEIGHT:
                             self.option = 2
-                        if self.SCREEN_HEIGHT // 3 + 2 * (self.BUTTON_HEIGHT + self.BUTTON_MARGIN) <= mouse_y <= self.SCREEN_HEIGHT // 3 + 2 * (self.BUTTON_HEIGHT + self.BUTTON_MARGIN) + self.BUTTON_HEIGHT:
+                        if SCREEN_HEIGHT // 3 + 2 * (BUTTON_HEIGHT + BUTTON_MARGIN) <= mouse_y <= SCREEN_HEIGHT // 3 + 2 * (BUTTON_HEIGHT + BUTTON_MARGIN) + BUTTON_HEIGHT:
                             self.option = 3
                 clicked = True
 
         if clicked and not pygame.mouse.get_pressed()[0]:
             clicked = False
 
-        if self.option == 1:  # Nút "Join Room"
-            if self.selected_room_code:
-                
+        # Nút "Join Room"
+        if self.option == 1:  
+            if self.selected_room_code != None:
                 # Lấy thông tin của phòng được chọn từ danh sách các phòng
                 selected_room_name = next(room for room in self.room_list if room['code'] == self.selected_room_code)
                 sp=int(selected_room_name['players']) + 1
@@ -258,12 +246,14 @@ class WaitingRoom:
                 # Tăng số lượng người chơi trong phòng lên 1
                 selected_room_name['players'] = str(data['player'])
 
-                waitingR = WaitingRoom2(self.screen, self.selected_room_code, self.client_socket, selected_room_name['name'])
-                while waitingR.running:
-                    waitingR.run()
-            self.option = 3
+                # waitingR = WaitingRoom2(self.screen, self.selected_room_code, self.client_socket, selected_room_name['name'])
+                Player_client(self.client_socket, self.screen).run()
+                # while waitingR.running:
+                #     waitingR.run()
+                self.option = 3
 
-        elif self.option == 2:  # Nút "Create Room"
+        # Nút "Create Room"
+        elif self.option == 2:  
             if not self.room_created:
                 self.creating_room = True  # Vẽ form nhập liệu
                 self.room_created = True  # Cập nhật biến cờ sau khi tạo phòng
@@ -273,25 +263,16 @@ class WaitingRoom:
                 self.alert_message = "This machine has already created a room."  # Nội dung thông báo
                 self.option = -1
 
-        if self.creating_room:  # Nếu đang hiển thị form tạo phòng
+        # Nếu đang hiển thị form tạo phòng
+        if self.creating_room:  
             create_room_form = CreateRoomForm(self.screen, self.client_socket)
             
             while create_room_form.running:
                 create_room_form.run()  # Vẽ form nhập liệu
 
-            waitingR = WaitingRoom2(self.screen, self.selected_room_code, self.client_socket, create_room_form.input_text)
-            while waitingR.running:
-                waitingR.run()
+            # waitingR = WaitingRoom2(self.screen, self.selected_room_code, self.client_socket, create_room_form.input_text)
+            # while waitingR.running:
+            #     waitingR.run()
+            Player_client(self.client_socket, self.screen).run()
             self.option=3
-
-
-            # for i in range(len(create_room_form.responStrLs.strings)):
-            #     new_room = {"name": create_room_form.responStrLs.name[i],
-            #                 "players": str(create_room_form.responStrLs.player[i]), 
-            #                 "code": create_room_form.responStrLs.strings[i]}
-            #     self.room_list.append(new_room)
-
             self.creating_room= False
-
-    
-    

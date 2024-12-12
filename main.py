@@ -12,7 +12,7 @@ class Main:
             menu.run()
             # Vào game 2 người chơi 1 máy
             if menu.play_option == 1:
-                offline_2player = Offline_2player(menu.screen, "Character 1", "Character 2")
+                offline_2player = Offline_2player(menu.screen)
                 while offline_2player.retrunMenu != 1:
                     offline_2player.run()
 

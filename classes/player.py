@@ -241,52 +241,60 @@ class Player:
 		
 	def __str__(self):   # Tạo một chuỗi đại diện cho đối tượng Player
 		player_info = [
-			str(self.speed), # 0
-			str(self.Max_jump), # 1
-			str(self.on_ground), # 2
+			str(self.speed),          # 0
+			str(self.Max_jump),       # 1
+			str(self.on_ground),      # 2
 			str(self.square_y_speed), # 3
-			str(self.GRAVITY), # 4
-			str(self.JUMP_POWER), # 5
-			self.state, # 6
-			str(self.max_health), # 7
-			str(self.health), # 8 
-			str(self.velocity_x), # 9
-			str(self.rect.x), # 10
-			str(self.rect.y), # 11
-			str(self.side), # 12
-			str(self.walkCount), # 13
-			str(self.kicAcount), # 14
-			str(self.atkAcount), # 15
-			str(self.sp1count), # 16
-			str(self.idlecount), # 17
-			str(self.right), # 18
-			str(self.left), # 19
-			str(self.key_twice), # 20
-			str(self.name) # 20
+			str(self.GRAVITY),        # 4
+			str(self.JUMP_POWER),     # 5
+			self.state,               # 6
+			str(self.max_health),     # 7
+			str(self.health),         # 8 
+			str(self.velocity_x),     # 9
+			str(self.rect.x),         # 10
+			str(self.rect.y),         # 11
+			str(self.side),           # 12
+			str(self.walkCount),      # 13
+			str(self.kicAcount),      # 14
+			str(self.atkAcount),      # 15
+			str(self.sp1count),       # 16
+			str(self.idlecount),      # 17
+			str(self.right),          # 18
+			str(self.left),           # 19
+			str(self.key_twice),      # 20
+			str(self.name),           # 21
+			str(self.energy),         # 22
+			str(self.skill1),         # 23
+			str(self.hitbox),         # 24
+			str(self.dame)            # 25
 		]
 		return ",".join(player_info)
 
 	def from_string(self, player_str):  # chuyển string lấy từ server thành giá trị cho player
-		values = player_str.split(",")
-		self.speed = int(values[0])
-		self.Max_jump = int(values[1])
-		self.on_ground = values[2].lower() == 'true'
+		values              = player_str.split(",")
+		self.speed          = int(values[0])
+		self.Max_jump       = int(values[1])
+		self.on_ground      = values[2].lower() == 'true'
 		self.square_y_speed = float(values[3])
-		self.GRAVITY = float(values[4])
-		self.JUMP_POWER = float(values[5])
-		self.state = values[6]
-		self.max_health = int(values[7])
-		self.health = int(values[8])
-		self.velocity_x = float(values[9])
-		self.rect.x = float(values[10])
-		self.rect.y = float(values[11])
-		self.side = values[12]
-		self.walkCount = int(values[13])
-		self.kicAcount = int(values[14])
-		self.atkAcount = int(values[15])
-		self.sp1count = int(values[16])
-		self.idlecount = int(values[17])
-		self.right = values[18].lower() == 'true'
-		self.left = values[19].lower() == 'true'
-		self.key_twice = values[20].lower() == 'true'
-		self.name = values[21]
+		self.GRAVITY        = float(values[4])
+		self.JUMP_POWER     = float(values[5])
+		self.state          = values[6]
+		self.max_health     = float(values[7])
+		self.health         = float(values[8])
+		self.velocity_x     = float(values[9])
+		self.rect.x         = float(values[10])
+		self.rect.y         = float(values[11])
+		self.side           = values[12]
+		self.walkCount      = int(values[13])
+		self.kicAcount      = int(values[14])
+		self.atkAcount      = int(values[15])
+		self.sp1count       = int(values[16])
+		self.idlecount      = int(values[17])
+		self.right          = values[18].lower() == 'true'
+		self.left           = values[19].lower() == 'true'
+		self.key_twice      = values[20].lower() == 'true'
+		self.name           = values[21]
+		self.energy         = float(values[22])
+		self.skill1         = values[23].lower() == 'true'
+		self.hitbox         = int(values[24])
+		self.dame           = int(values[25])

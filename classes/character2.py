@@ -9,7 +9,6 @@ class Character2(Player): # the blue guy
 		self.walkRight_sp = [py.image.load(f'assets/purple_sp/stickman_running{i}.png') for i in range(1, 6)]
 		self.slashA1_sp = [py.image.load(f'assets/purple_sp/stickman_punch{i}.png') for i in range(1, 5)]
 		self.speed = 6
-		self.ulti = False
 
 	def skill_active(self, screen, player2):
 		return False
@@ -21,7 +20,6 @@ class Character2(Player): # the blue guy
 			self.kicAcount = 0
 		if self.sp1count + 1 >= 300: # 19 frame
 			self.skill1 = False
-			self.ulti = False
 			self.max_health = 100
 			self.health = self.health / 2
 			self.dame = 10
@@ -35,17 +33,16 @@ class Character2(Player): # the blue guy
 			self.idlecount = 0
 
 		if self.state == 'SP1' and self.max_health == 100:
-			self.ulti = True
+			self.skill1 = True
 			self.max_health = 200
 			self.hitbox = 150
 			self.health = self.health + 100
 			self.dame = 20
 			self.state = 'NO'
-			self.skill1 = True
 			self.block_def = True
 			self.block_kick = True
 
-		if self.ulti:
+		if self.skill1:
 			if self.state == 'ATK':
 				if self.atkAcount < 23:
 					self.atkAcount += 1

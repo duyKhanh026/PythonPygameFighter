@@ -8,15 +8,15 @@ from classes.action import *
 from Values.values import *
 
 class Offline_2player:
-    def __init__(self, screen,  p1, p2, online=False):
+    def __init__(self, screen, online=False):
         self.game_over = 0
         self.screen = screen
         self.isOnline = online
         self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
 
-        self.player2.name = p2
-        self.player1.name = p1
+        self.player1.name = "Character 1"
+        self.player2.name = "Character 2"
 
         self.settingBtn = py.image.load(f'assets/setting.png')
         self.settingClicked = True
@@ -98,20 +98,20 @@ class Offline_2player:
             p2.state = 'PUS_L'  # đẩy về phía bên trái
     
     # xữ lý player2 khi player1 dùng đòn đá thành công
-    def player_kick(self, p1, p2):
+    def player_kick(self, p1, p2, online=False):
         if p1.state == 'KIC' and p2.state != 'ATK':
             if p1.kicAcount > 28 and p2.state != 'PUS_R' and p2.state != 'PUS_L':
-                if handle_attack(p1, p2):
-                    self.pushed_side(p1, p2)
+                if handle_attack(p1, p2 ):
+                    self.pushed_side(p1, p2, online=online)
                     p2.velocity_x = 8.4
                     p2.push_cooldown_p1 = PUSH_COOLDOWN
                     p2.push_ready_p1 = False
 
     # xữ lý player2 khi player1 dùng đòn đánh thường thành công
-    def player_attack(self ,p1, p2):
+    def player_attack(self ,p1, p2, online=False):
         if p1.state == 'ATK' and p2.state != 'DEF':
             if p1.atkAcount == 16 and p2.state != 'STUN':
-                if handle_attack(p1, p2):
+                if handle_attack(p1, p2, online=online):
                     p2.state = 'STUN'
                     p2.stunned_cooldown_p1 = STUNNED_COOLDOWN
                     p2.stunned_ready_p1 = False
@@ -140,8 +140,9 @@ class Offline_2player:
 
         # xữ lý đầu vào để di chuyển và thực hiện hành động cho nhân vật 
         for player in [self.player1, self.player2]:
-            player.move_logic(py.key.get_pressed())
-            player.sp_move(py.key.get_pressed())
+            if player == self.player1 or not self.isOnline:
+                player.move_logic(py.key.get_pressed())
+                player.sp_move(py.key.get_pressed())
 
             if player.state == 'ATK' or player.state == 'KIC':
                 if player.attack_cooldown_p1 == 0:
@@ -160,10 +161,10 @@ class Offline_2player:
         self.attack_confirmation(self.player1, 10, toadoInfo)
         self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, toadoInfo)
 
-        self.player_attack(self.player1, self.player2)
+        self.player_attack(self.player1, self.player2, self.isOnline)
         self.player_attack(self.player2, self.player1)
 
-        self.player_kick(self.player1, self.player2)
+        self.player_kick(self.player1, self.player2, self.isOnline)
         self.player_kick(self.player2, self.player1)
 
         self.stunning_confirmation(self.player1, 10, toadoInfo + 20)
@@ -186,45 +187,6 @@ class Offline_2player:
 
                 py.draw.line(self.screen, GREEN, (0, player.rect.y), (SCREEN_WIDTH, player.rect.y), 1)
                 py.draw.line(self.screen, GREEN, (player.rect.x, 0), (player.rect.x, SCREEN_HEIGHT), 1)
-
-
-    def _update_ui_client(self):
-        self.backgr()
-
-        self.player1.move_logic(py.key.get_pressed())
-        self.player1.sp_move(py.key.get_pressed())
-        
-        for player in [self.player1, self.player2]:
-            if player.state == 'ATK' or player.state == 'KIC':
-                if player.attack_cooldown_p1 == 0:
-                    player.attack_cooldown_p1 = ATTACK_COOLDOWN
-                    player.attack_ready_p1 = False
-
-        if self.player1.rect.y > SCREEN_HEIGHT or self.player1.health <= 0:
-            self.game_over = 1
-
-        if self.player1.name == "Character 1" and self.player1.skill_active(self.screen, self.player2):
-            handle_attack(None, self.player2)
-            self.pushed_side(self.player1, self.player2)
-
-        if self.player2.name == "Character 1" and self.player2.skill_active(self.screen, self.player1):
-            handle_attack(None, self.player1)
-            self.pushed_side(self.player2, self.player1)
-
-        self.attack_confirmation(self.player1, 10, 30)
-        self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, 30)
-
-        self.player_attack(self.player1, self.player2)
-        self.player_attack(self.player2, self.player1)
-
-        self.player_kick(self.player1, self.player2)
-        self.player_kick(self.player2, self.player1)
-
-        self.stunning_confirmation(self.player1, 10, 50)
-        self.stunning_confirmation(self.player2, SCREEN_WIDTH - 110, 50)
-
-        self.kicked_confirmation(self.player1, 10, 80)
-        self.kicked_confirmation(self.player2, SCREEN_WIDTH - 110, 80)
 
     def _ui_setting(self):
         rect = py.Rect(300, 100, 900, 600)
@@ -266,12 +228,9 @@ class Offline_2player:
         text_rect = text_surface.get_rect(center=(x + BUTTON_WIDTH // 2, y + BUTTON_HEIGHT // 2))
         self.screen.blit(text_surface, text_rect)
 
-    def run(self, online=False):
+    def run(self):
         if self.game_over == 0:
-            if online:
-                self._update_ui_client()
-            else:
-                self._update_ui()
+            self._update_ui()
             for player in [self.player1, self.player2]:
                 player.draw(self.screen)
         else :

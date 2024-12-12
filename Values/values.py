@@ -21,7 +21,7 @@ BUTTON_TEXT_COLOR = BLACK
 
 ground_height = 600
 
-menu_background = "GUI/background.jpg"
+menu_background = "assets/background.jpg"
 font_use = "Arial"
 
 character1_folder = 'blue/stickman_blade'
