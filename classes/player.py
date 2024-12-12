@@ -96,15 +96,14 @@ class Player:
 		self.redrawGameWindow(surface)
 
 		# Draw health bar
-		py.draw.rect(surface, RED, (self.rect.x, self.rect.y, self.rect.width, 10))
-		py.draw.rect(surface, GREEN, (self.rect.x, self.rect.y, int(self.rect.width * (self.health / self.max_health)), 10))
+		py.draw.rect(surface, RED, (self.rect.x, self.rect.y + self.rect.height + 10, self.rect.width, 10))
+		py.draw.rect(surface, GREEN, (self.rect.x, self.rect.y + self.rect.height + 10, int(self.rect.width * (self.health / self.max_health)), 10))
 		# Draw health bar
-		py.draw.rect(surface, GRAY, (self.rect.x, self.rect.y - 10, self.rect.width, 10))
-		py.draw.rect(surface, BLUE, (self.rect.x, self.rect.y - 10, int(self.rect.width * (self.energy / self.max_energy)), 10))
+		py.draw.rect(surface, GRAY1, (self.rect.x, self.rect.y + self.rect.height, self.rect.width, 10))
+		py.draw.rect(surface, BLUE, (self.rect.x, self.rect.y + self.rect.height, int(self.rect.width * (self.energy / self.max_energy)), 10))
 		if self.energy < self.max_energy:
 			self.energy += self.energy_recover
 		
-
 	def go_left(self):
 		self.right = False
 		self.side = 'R'

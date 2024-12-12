@@ -8,45 +8,40 @@ from classes.action import *
 from Values.values import *
 
 class Offline_2player:
-    def __init__(self, screen,  p1='', p2='', online=False):
+    def __init__(self, screen,  p1, p2, online=False):
         self.count_frame = 0
         self.game_over = 0
         self.screen = screen
+        self.isOnline = online
         self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
         
-        if self.player1.name == '' and p1 == 'Character 1':
-            self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
-            print(p1)
-        if self.player1.name == '' and p1 == 'Character 2':
-            self.player1 = Character2(character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
-
-        if online:
-            if self.player2.name == '' and p2 == 'Character 2':
-                self.player2 = Character2(character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
-            if self.player2.name == '' and p2 == 'Character 1':
-                self.player2 = Character1(character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
-        else :
-            if self.player2.name == '' and p2 == 'Character 2':
-                self.player2 = Character2(character2_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
-            if self.player2.name == '' and p2 == 'Character 1':
-                self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
-
         self.player2.name = p2
         self.player1.name = p1
 
-        self.clock = py.time.Clock()
-        
         self.settingBtn = py.image.load(f'assets/setting.png')
-        self.settingClicked = False
+        self.settingClicked = True
         self.retrunMenu = -1
         self.infoMode = False
 
-    def create_character(character_type, x, y, folder, color, keys, direction):
-        if character_type == 'Character 1':
-            return Character1(200, 50, folder, x, y, color, *keys, direction)
-        elif character_type == 'Character 2':
-            return Character2(200, 80, folder, x, y, color, *keys, direction)
+        self.setCharacter()
+        self.clock = py.time.Clock()
+
+    def setCharacter(self):
+        if self.player1.name == 'Character 1':
+            self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+        if self.player1.name == 'Character 2':
+            self.player1 = Character2(character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+        if self.isOnline:
+            if self.player2.name == 'Character 2':
+                self.player2 = Character2(character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+            if self.player2.name == 'Character 1':
+                self.player2 = Character1(character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+        else :
+            if self.player2.name == 'Character 2':
+                self.player2 = Character2(character2_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
+            if self.player2.name == 'Character 1':
+                self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
 
     def reset(self):
         self.count_frame = 0
@@ -140,10 +135,8 @@ class Offline_2player:
 
     def _update_ui(self):
         self.backgr()
-
-        toadoInfo = 80
-
-        self.screen.blit(self.settingBtn, (10,10))
+        # gắn nút setting
+        self.screen.blit(self.settingBtn, btn_setting)
 
         # xữ lý đầu vào để di chuyển và thực hiện hành động cho nhân vật 
         for player in [self.player1, self.player2]:
@@ -163,7 +156,6 @@ class Offline_2player:
                 self.game_over = (1 if player == self.player1 else 2) 
             elif player.health <= 0:
                 self.game_over = (1 if player == self.player1 else 2) 
-
 
         self.attack_confirmation(self.player1, 10, toadoInfo)
         self.attack_confirmation(self.player2, SCREEN_WIDTH - 110, toadoInfo)
@@ -190,7 +182,7 @@ class Offline_2player:
                 # Draw text about the current state 
                 font = py.font.SysFont(None, 46)
                 text = font.render(' ' + player.state, True, BLACK)
-                self.screen.blit(text, (player.rect.x, player.rect.y + player.rect.height))
+                self.screen.blit(text, (player.rect.x, player.rect.y + player.rect.height + 20))
 
                 py.draw.line(self.screen, GREEN, (0, player.rect.y), (SCREEN_WIDTH, player.rect.y), 1)
                 py.draw.line(self.screen, GREEN, (player.rect.x, 0), (player.rect.x, SCREEN_HEIGHT), 1)
@@ -210,7 +202,6 @@ class Offline_2player:
 
         if self.player1.rect.y > SCREEN_HEIGHT or self.player1.health <= 0:
             self.game_over = 1
-
 
         if self.player1.name == "Character 1" and self.player1.skill_active(self.screen, self.player2):
             handle_attack(None, self.player2)
@@ -244,17 +235,33 @@ class Offline_2player:
         py.draw.line(self.screen, WHITE, rect.topright, rect.bottomright)
         py.draw.line(self.screen, WHITE, rect.bottomright, rect.bottomleft)
         py.draw.line(self.screen, WHITE, rect.bottomleft, rect.topleft)
-        font = py.font.SysFont(font_use, 32)
-        text = font.render('Are You Quit?', True, RED)
-        self.screen.blit(text, (400, 150))
-        self.draw_button("YES" , 600, 150)
 
-        text = font.render('InfoMode', True, RED)
-        self.screen.blit(text, (400, 250))
-        self.draw_button("NO" if self.infoMode else "YES" , 600, 250)
+        font = py.font.SysFont(font_use, 32)
+        text = font.render('fighter 1', True, WHITE)
+        self.screen.blit(text, txt_fighter1)
+        text = font.render('fighter 2', True, WHITE)
+        self.screen.blit(text, txt_fighter2)
+
+        self.draw_button('Go To Menu' , btn_gotomenu)
+        self.draw_button("Infor ON" if self.infoMode else "Infor OFF" , btn_infor)
+        self.draw_button("PLAY!", btn_play)
+
+        fighter = py.image.load(f'assets/{character1_folder}_idle1.png')
+        self.screen.blit(fighter, btn_fighter1)
+        self.screen.blit(fighter, (btn_fighter1[0] * 2.46, btn_fighter1[1]))
+        fighter = py.image.load(f'assets/{character2_folder}_idle1.png')
+        self.screen.blit(fighter, btn_fighter2)
+        self.screen.blit(fighter, (btn_fighter1[0] * 2.46 + choice_box_size, btn_fighter1[1]))
+
+        # Lựa chọn chọn fighter
+        self.drawStyleRect(370 if self.player1.name == 'Character 1' else 370 + choice_box_size, 400)
+        # Lựa chọn chọn fighter
+        self.drawStyleRect(815 if self.player2.name == 'Character 1' else 815 + choice_box_size, 400)
+
 
     # Function to draw a button
-    def draw_button(self, text, x, y):
+    def draw_button(self, text, position):
+        x, y = position
         font_button = py.font.SysFont(font_use, 24)
         py.draw.rect(self.screen, BUTTON_COLOR, (x, y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=20)
         text_surface = font_button.render(text, True, BUTTON_TEXT_COLOR)
@@ -262,19 +269,18 @@ class Offline_2player:
         self.screen.blit(text_surface, text_rect)
 
     def run(self, online=False):
-
+        print(py.mouse.get_pos())
         if self.game_over == 0:
             if online:
                 self._update_ui_client()
             else:
                 self._update_ui()
-
             for player in [self.player1, self.player2]:
                 player.draw(self.screen)
         else :
             textEnd = "PLAYER 1 WIN" if self.game_over == 2 else "PLAYER 2 WIN"
-            text = py.font.SysFont(None, 64).render(textEnd, True, WHITE)
-            text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+            text = py.font.SysFont(None, 100).render(textEnd, True, BLUE)
+            text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3))
             self.screen.blit(text, text_rect)
 
         if self.settingClicked: 
@@ -290,18 +296,32 @@ class Offline_2player:
                 exit(1)
             elif event.type == py.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = py.mouse.get_pos()
-                if 10 <= mouse_x <= (10 + 64):
-                    if 10 <= mouse_y <= (10 + 64):
+                if btn_setting[0] <= mouse_x <= (btn_setting[0] + box_setting):
+                    if btn_setting[1] <= mouse_y <= (btn_setting[1] + box_setting):
                         self.settingClicked = not self.settingClicked
                 if self.settingClicked:
-                    if 600 <= mouse_x <= (600 + 200):
-                        if 150 <= mouse_y <= (150 + 40):
+                    if btn_play[0] <= mouse_x <= (btn_play[0] + BUTTON_WIDTH):
+                        # Back to the Menu
+                        if btn_gotomenu[1] <= mouse_y <= (btn_gotomenu[1] + BUTTON_HEIGHT):
                             self.retrunMenu = 1
-                    if 600 <= mouse_x <= (600 + 200):
-                        if 250 <= mouse_y <= (250 + 40):
+                        # Turn on/off information Mode
+                        if btn_infor[1] <= mouse_y <= (btn_infor[1] + BUTTON_HEIGHT):
                             self.infoMode = not self.infoMode
-                            self.retrunMenu = 2
+                        # Back to the game
+                        if btn_play[1] <= mouse_y <= (btn_play[1] + BUTTON_HEIGHT):
+                            self.settingClicked = not self.settingClicked
 
-    def start(self):
-        while self.game_over == 0:
-            self.run()
+                    # Click to choice Fighter
+                    if 400 <= mouse_y <= 555:
+                        if 370 <= mouse_x <= 370 + choice_box_size:
+                            self.player1.name = 'Character 1'
+                        if 525 < mouse_x <= 525 + choice_box_size:
+                            self.player1.name = 'Character 2'
+                        if 815 < mouse_x <= 815 + choice_box_size:
+                            self.player2.name = 'Character 1'
+                        if 970 < mouse_x <= 970 + choice_box_size:
+                            self.player2.name = 'Character 2'
+                        self.setCharacter()
+
+    def drawStyleRect(self, x, y):
+        py.draw.rect(self.screen, YELLOW, (x,y,choice_box_size,choice_box_size), 1)
