@@ -7,7 +7,7 @@ from classes.character2 import Character2
 from classes.action import *
 from Values.values import *
 
-class Offline_2player:
+class Game_play:
     def __init__(self, screen, online=False):
         self.game_over = 0
         self.screen = screen
@@ -15,15 +15,12 @@ class Offline_2player:
         self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
 
-        self.player1.name = "Character 1"
-        self.player2.name = "Character 2"
-
         self.settingBtn = py.image.load(f'assets/setting.png')
         self.settingClicked = True
         self.retrunMenu = -1
         self.infoMode = False
-
-        self.setCharacter()
+        self.notification = 'Choose the fighters to play.'
+        self.playing = False
         self.clock = py.time.Clock()
 
     def setCharacter(self):
@@ -49,6 +46,8 @@ class Offline_2player:
 
         self.player1.tag_name = 'Fighter 1' if not self.isOnline else 'YOU' 
         self.player2.tag_name = 'Fighter 2' if not self.isOnline else 'OPPONENT'
+
+        self.playing = True
 
     def reset(self):
         self.game_over = 0
@@ -200,6 +199,12 @@ class Offline_2player:
         py.draw.line(self.screen, WHITE, rect.bottomleft, rect.topleft)
 
         font = py.font.SysFont(font_use, 32)
+
+        # Phần cho thông báo
+        text_surface = font.render("Notice: " + self.notification, True, WHITE)
+        text_rect = text_surface.get_rect(topleft=(310, 105))
+        self.screen.blit(text_surface, text_rect)
+
         text = font.render('fighter 1', True, WHITE)
         self.screen.blit(text, txt_fighter1)
         text = font.render('fighter 2', True, WHITE)
@@ -207,7 +212,7 @@ class Offline_2player:
 
         self.draw_button('Go To Menu' , btn_gotomenu)
         self.draw_button("Infor ON" if self.infoMode else "Infor OFF" , btn_infor)
-        self.draw_button("PLAY!", btn_play)
+        self.draw_button("Resume" if self.playing else "PLAY!", btn_play)
 
         fighter = py.image.load(f'assets/{character1_folder}_idle1.png')
         self.screen.blit(fighter, btn_fighter1)
@@ -216,11 +221,12 @@ class Offline_2player:
         self.screen.blit(fighter, btn_fighter2)
         self.screen.blit(fighter, (btn_fighter1[0] * 2.46 + choice_box_size, btn_fighter1[1]))
 
-        # Lựa chọn chọn fighter
-        self.drawStyleRect(370 if self.player1.name == 'Character 1' else 370 + choice_box_size, 400)
-        # Lựa chọn chọn fighter
-        self.drawStyleRect(815 if self.player2.name == 'Character 1' else 815 + choice_box_size, 400)
-
+        if self.player1.name != '':
+            # Lựa chọn chọn fighter
+            self.drawStyleRect(370 if self.player1.name == 'Character 1' else 370 + choice_box_size, 400)
+        if self.player2.name != '':
+            # Lựa chọn chọn fighter
+            self.drawStyleRect(815 if self.player2.name == 'Character 1' else 815 + choice_box_size, 400)
 
     # Function to draw a button
     def draw_button(self, text, position):
@@ -236,11 +242,12 @@ class Offline_2player:
             self._update_ui()
             for player in [self.player1, self.player2]:
                 player.draw(self.screen)
-        else :
-            textEnd = "PLAYER 1 WIN" if self.game_over == 2 else "PLAYER 2 WIN"
-            text = py.font.SysFont(None, 100).render(textEnd, True, BLUE)
-            text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3))
-            self.screen.blit(text, text_rect)
+
+            if self.game_over != 0:
+                textEnd = "PLAYER 1 WIN" if self.game_over == 2 else "PLAYER 2 WIN"
+                text = py.font.SysFont(None, 100).render(textEnd, True, BLUE)
+                text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3))
+                self.screen.blit(text, text_rect)
 
         if self.settingClicked: 
             self._ui_setting()
@@ -258,9 +265,16 @@ class Offline_2player:
                     exit(1)
             elif event.type == py.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = py.mouse.get_pos()
-                if btn_setting[0] <= mouse_x <= (btn_setting[0] + box_setting):
-                    if btn_setting[1] <= mouse_y <= (btn_setting[1] + box_setting):
-                        self.settingClicked = not self.settingClicked
+                # Xử lý lúc nấn nút open/close setting
+                if self.player1.name != '' and self.player2.name != '' and self.playing:
+                    if btn_setting[0] <= mouse_x <= (btn_setting[0] + box_setting):
+                        if btn_setting[1] <= mouse_y <= (btn_setting[1] + box_setting):
+                            self.settingClicked = not self.settingClicked
+                            if self.game_over != 0:
+                                self.player1.name = ''  
+                                self.player2.name = ''
+                                self.playing = False
+
                 if self.settingClicked:
                     if btn_play[0] <= mouse_x <= (btn_play[0] + BUTTON_WIDTH):
                         # Back to the Menu
@@ -271,21 +285,25 @@ class Offline_2player:
                         if btn_infor[1] <= mouse_y <= (btn_infor[1] + BUTTON_HEIGHT):
                             self.infoMode = not self.infoMode
                         # Back to the game
-                        if btn_play[1] <= mouse_y <= (btn_play[1] + BUTTON_HEIGHT):
-                            self.settingClicked = not self.settingClicked
-                            self.reset()
+                        if self.player1.name != '' and self.player2.name != '':
+                            if btn_play[1] <= mouse_y <= (btn_play[1] + BUTTON_HEIGHT):
+                                if not self.playing or self.game_over != 0:
+                                    self.reset()
+                                self.settingClicked = not self.settingClicked
+                        else :
+                            self.notification = 'Not selected enough fighters.'
 
                     # Click to choice Fighter
-                    if 400 <= mouse_y <= 555:
+                    if 400 <= mouse_y <= 555 and not self.playing:
                         if 370 <= mouse_x <= 370 + choice_box_size:
                             self.player1.name = 'Character 1'
                         if 525 < mouse_x <= 525 + choice_box_size:
                             self.player1.name = 'Character 2'
-                        if 815 < mouse_x <= 815 + choice_box_size:
-                            self.player2.name = 'Character 1'
-                        if 970 < mouse_x <= 970 + choice_box_size:
-                            self.player2.name = 'Character 2'
-                        self.setCharacter()
+                        if not self.isOnline:
+                            if 815 < mouse_x <= 815 + choice_box_size:
+                                self.player2.name = 'Character 1'
+                            if 970 < mouse_x <= 970 + choice_box_size:
+                                self.player2.name = 'Character 2'
 
     def drawStyleRect(self, x, y):
         py.draw.rect(self.screen, YELLOW, (x,y,choice_box_size,choice_box_size), 1)

@@ -1,7 +1,7 @@
 import json
 import socket
 from Values.values import *
-from GUI.offline_2player import *
+from GUI.game_play import *
 
 class Player_client:
     def __init__(self, client, screen):
@@ -10,7 +10,7 @@ class Player_client:
         self.HEADER = 4096
         self.client = client
         self.getPlayer2 = False
-        self.game = Offline_2player(screen, True)
+        self.game = Game_play(screen, True)
 
     def send(self, msg):
         try:

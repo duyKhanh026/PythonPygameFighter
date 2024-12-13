@@ -21,6 +21,8 @@ class Menu:
         self.font_title = pygame.font.SysFont(font_use, 72)
         self.font_button = pygame.font.SysFont(font_use, 24)
 
+        self.notification = ''
+
     # Function to draw a button
     def draw_button(self, text, x, y):
         pygame.draw.rect(self.screen, BUTTON_COLOR, (x, y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=20)
@@ -34,7 +36,7 @@ class Menu:
         self.screen.blit(self.background_image, (0, 0))
 
         # Game title
-        game_title = self.font_title.render("Fighting Game", True, (255, 255, 255))
+        game_title = self.font_title.render(game_name, True, (255, 255, 255))
         title_rect = game_title.get_rect(center=(self.window_width // 2, self.window_height // 3))
         self.screen.blit(game_title, title_rect)
         # Draw buttons
@@ -42,6 +44,11 @@ class Menu:
         self.draw_button("LAN", (self.window_width - BUTTON_WIDTH) // 2, self.window_height // 2 + BUTTON_HEIGHT + BUTTON_MARGIN)
         self.draw_button("Exit", (self.window_width - BUTTON_WIDTH) // 2, self.window_height // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2)
         
+        # Phần cho thông báo
+        text_surface = self.font_button.render("Notice: " + self.notification, True, WHITE)
+        text_rect = text_surface.get_rect(topleft=(10, 5))
+        self.screen.blit(text_surface, text_rect)
+
         pygame.display.flip()
 
     # Main function
@@ -65,8 +72,3 @@ class Menu:
                         # print("Play 2 Players")
                         pygame.quit()
                         exit(1)
-
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_n:
-                    # Change player name when 'n' key is pressed
-                    self.player_name = input("Enter player name: ")

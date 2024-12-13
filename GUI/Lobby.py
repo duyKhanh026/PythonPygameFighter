@@ -10,7 +10,7 @@ from GUI.WaitingRoom import WaitingRoom2
 from GUI.client import Player_client
 from Values.values import *
 
-class WaitingRoom:
+class Lobby:
     def __init__(self, surface):
         self.screen = surface
         self.default_font_size = 30

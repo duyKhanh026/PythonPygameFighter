@@ -1,4 +1,4 @@
-game_name = 'Fighting Game'
+game_name = 'Duel Masters: The Python Game'
 
 SCREEN_WIDTH = 1500
 SCREEN_HEIGHT = 800
