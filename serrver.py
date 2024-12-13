@@ -51,11 +51,7 @@ def handle_room_client(conn, addr):
 		msg = conn.recv(4096).decode(FORMAT)
 		if msg:
 			# Hiển thị dữ liệu nhận được từ client room
-			print(f"[{addr}] Sent message: {msg}")
-			if msg == "EXIT_ROOM":
-				print("Exit nè")
-				handle_exit_room(conn, addr)
-				break
+			print(f"[{addr}]: {msg}")
 			data = json.loads(msg)
 			if data == DISCONNECT_MESSAGE:
 				my_string_list.remove_string(str(get_portt(addr)))
@@ -101,12 +97,6 @@ def extract_pler(string):
 		return string[index + len(keyword):]
 	else:
 		return None
-
-def handle_exit_room(conn, addr):
-	# Xử lý khi client muốn rời phòng
-	# Ví dụ: thông báo trạng thái và loại bỏ client khỏi danh sách kết nối
-	print(f"Client at {addr} left the room.")
-	conns.remove(conn)  # Loại bỏ kết nối của client khỏi danh sách
 
 def handle_room_data(data ,addr):
 	# Xử lý dữ liệu của room ở đây

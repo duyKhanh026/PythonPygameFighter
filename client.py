@@ -14,7 +14,7 @@ class Player_client:
     def send(self, msg):
         try:
             if msg == self.DISCONNECT_MESSAGE:
-                self.client.sendall(json.dumps(self.DISCONNECT_MESSAGE).encode())
+                self.client.sendall(json.dumps(msg).encode())
             else:
                 self.client.sendall(json.dumps("pler/" + msg).encode())
             remessage = self.client.recv(4096).decode()
@@ -29,5 +29,4 @@ class Player_client:
         while self.game.game_over == 0 and self.game.retrunMenu == -1:
             self.game.run()
             self.send(str(self.game.player1))
-
         self.send(self.DISCONNECT_MESSAGE)

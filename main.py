@@ -8,6 +8,7 @@ import json
 class Main: 
     def run(self):
         menu = Menu()
+
         while True:
             menu.run()
             # Vào game 2 người chơi 1 máy
