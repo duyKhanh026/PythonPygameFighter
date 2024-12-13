@@ -272,7 +272,7 @@ class Lobby:
                 create_room_form.run()  # Vẽ form nhập liệu
 
             if create_room_form.option == 1:
-                Player_client(self.client_socket, self.screen).run()
+                Player_client(self.client_socket, self.screen, True).run()
                 self.option=3
                 self.creating_room = False
             else :

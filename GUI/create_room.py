@@ -1,6 +1,5 @@
 import random
 import pygame
-import sys
 from classes.room import Room,RoomClient
 from classes.hostData import StringList
 from Values.values import *

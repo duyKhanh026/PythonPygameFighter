@@ -1,6 +1,3 @@
-import math
-import pygame as py
-import numpy as np
 import random
 from classes.player import Player
 from classes.character1 import Character1
@@ -9,13 +6,12 @@ from classes.action import *
 from Values.values import *
 
 class Game_play:
-    def __init__(self, screen, online=False):
+    def __init__(self, screen, online=False, own_room=False):
         self.game_over = 0
         self.screen = screen
         self.isOnline = online
         self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         self.player2 = Character1(character1_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
-
         self.settingBtn = py.image.load(f'assets/setting.png')
         self.settingClicked = True
         self.retrunMenu = -1
@@ -23,6 +19,8 @@ class Game_play:
         self.notification = 'Choose the fighters to play.'
         self.playing = False
         self.clock = py.time.Clock()
+        self.own_room = own_room
+        self.player1.own_room = "YE" if self.own_room else "NO"
 
     def setCharacter(self):
         p1_name = self.player1.name
@@ -47,6 +45,8 @@ class Game_play:
 
         self.player1.tag_name = 'Fighter 1' if not self.isOnline else 'YOU' 
         self.player2.tag_name = 'Fighter 2' if not self.isOnline else 'OPPONENT'
+
+        self.player1.own_room = "YE" if self.own_room else "NO"
 
         self.playing = True
 

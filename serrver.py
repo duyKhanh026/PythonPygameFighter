@@ -1,7 +1,6 @@
 import json
 import socket
 import threading
-import json
 from classes.player import Player
 from classes.hostData import StringList
 

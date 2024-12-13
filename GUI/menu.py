@@ -10,12 +10,9 @@ class Menu:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption(game_name)
 
-        # Kích thước cửa sổ pygame
-        self.window_width, self.window_height = self.screen.get_size()
-
         # Tải hình ảnh nền
         self.background_image = pygame.image.load(menu_background)
-        self.background_image = pygame.transform.scale(self.background_image, (self.window_width, self.window_height))
+        self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         # Select a font from the available fonts in the system
         self.font_title = pygame.font.SysFont(font_use, 72)
@@ -23,11 +20,15 @@ class Menu:
 
         self.notification = ''
 
+        self.btnPlayOffline = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.btnPlayOnline = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT // 2 + BUTTON_HEIGHT + BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.btnExit = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2, BUTTON_WIDTH, BUTTON_HEIGHT)
+
     # Function to draw a button
-    def draw_button(self, text, x, y):
-        pygame.draw.rect(self.screen, BUTTON_COLOR, (x, y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=20)
+    def draw_button(self, text, btn):
+        pygame.draw.rect(self.screen, BUTTON_COLOR, btn, border_radius=20)
         text_surface = self.font_button.render(text, True, BUTTON_TEXT_COLOR)
-        text_rect = text_surface.get_rect(center=(x + BUTTON_WIDTH // 2, y + BUTTON_HEIGHT // 2))
+        text_rect = text_surface.get_rect(center=(btn.x + BUTTON_WIDTH // 2, btn.y + BUTTON_HEIGHT // 2))
         self.screen.blit(text_surface, text_rect)
 
     # Function to draw the menu interface
@@ -37,12 +38,12 @@ class Menu:
 
         # Game title
         game_title = self.font_title.render(game_name, True, (255, 255, 255))
-        title_rect = game_title.get_rect(center=(self.window_width // 2, self.window_height // 3))
+        title_rect = game_title.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
         self.screen.blit(game_title, title_rect)
         # Draw buttons
-        self.draw_button("Play 2 Players", (self.window_width - BUTTON_WIDTH) // 2, self.window_height // 2)
-        self.draw_button("LAN", (self.window_width - BUTTON_WIDTH) // 2, self.window_height // 2 + BUTTON_HEIGHT + BUTTON_MARGIN)
-        self.draw_button("Exit", (self.window_width - BUTTON_WIDTH) // 2, self.window_height // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2)
+        self.draw_button("Play 2 Players", self.btnPlayOffline)
+        self.draw_button("LAN", self.btnPlayOnline)
+        self.draw_button("Exit", self.btnExit)
         
         # Phần cho thông báo
         text_surface = self.font_button.render("Notice: " + self.notification, True, WHITE)
@@ -60,15 +61,13 @@ class Menu:
                 exit(1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                # Check which button the player clicked
-                if (self.window_width - BUTTON_WIDTH) // 2 <= mouse_x <= (self.window_width - BUTTON_WIDTH) // 2 + BUTTON_WIDTH:
-                    if self.window_height // 2 <= mouse_y <= self.window_height // 2 + BUTTON_HEIGHT:
-                        # print("Play with Bot") 
-                        self.play_option = 1
-                    elif self.window_height // 2 + BUTTON_HEIGHT + BUTTON_MARGIN <= mouse_y <= self.window_height // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2:
-                        # print("Play 2 Players")
-                        self.play_option = 2
-                    elif self.window_height // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2 <= mouse_y <= self.window_height // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 4:
-                        # print("Play 2 Players")
-                        pygame.quit()
-                        exit(1)
+                # Select play game
+                if self.btnPlayOffline.collidepoint(event.pos):
+                    self.play_option = 1
+                # Select play online
+                elif self.btnPlayOnline.collidepoint(event.pos):
+                    self.play_option = 2
+                # Quit
+                elif self.btnExit.collidepoint(event.pos):
+                    pygame.quit()
+                    exit(1)

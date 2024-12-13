@@ -59,7 +59,7 @@ class StringList:
             del self.name[index] 
             del self.player[index] 
             del self.code[index]
-            print(f"String '{s}' and its coordinates removed from the list.")
+            print(f"String '{s}' and its coordinates removed from the list. " + str(len(self.player)))
         else:
             print(f"String '{s}' not found in the list.")
 

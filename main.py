@@ -8,7 +8,7 @@ import json
 class Main: 
     def run(self):
         menu = Menu()
-
+        
         while True:
             menu.run()
             # Vào game 2 người chơi 1 máy
@@ -16,7 +16,6 @@ class Main:
                 offline_2player = Game_play(menu.screen)
                 while offline_2player.retrunMenu != 1:
                     offline_2player.run()
-
             # Kết nối thông qua Lan
             if menu.play_option == 2:
                 try:
@@ -26,8 +25,7 @@ class Main:
                     lobby.client_socket.sendall(json.dumps("!DISCONNECT").encode())
                     lobby.option = -1
                 except:
-                    menu.notification = 'Server not found'
-                
+                    menu.notification = 'Server not found'                
             menu.play_option = -1
 
 if __name__ == "__main__":
