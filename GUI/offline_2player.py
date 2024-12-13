@@ -47,6 +47,9 @@ class Offline_2player:
         self.player1.name = p1_name
         self.player2.name = p2_name
 
+        self.player1.tag_name = 'Fighter 1' if not self.isOnline else 'YOU' 
+        self.player2.tag_name = 'Fighter 2' if not self.isOnline else 'OPPONENT'
+
     def reset(self):
         self.game_over = 0
         self.screen = py.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

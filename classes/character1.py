@@ -7,11 +7,11 @@ class Character1(Player): # the blue guy
 		self.sp1 = [py.image.load(f'assets/{strNam}_sp{i}.png') for i in range(1, 20)]
 		self.image1 = py.image.load("assets/kill1.png")
 		self.hinh_1_list = []
-		self.lengt = int(600 / 50)
+		self.lengt = 20
 		self.startX = 0
 		self.startY = 0
 		self.energy_recover = 0.3
-		self.time_to_active_skill = 50
+		self.time_to_active_skill = 40
 
 
 		# Thêm 10 biến hình 1 vào list
