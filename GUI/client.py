@@ -9,7 +9,6 @@ class Player_client:
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
         self.HEADER = 4096
         self.client = client
-        self.getPlayer2 = False
         self.game = Game_play(screen, True)
 
     def send(self, msg):
@@ -22,19 +21,12 @@ class Player_client:
             print(remessage)
             if not remessage == 'NOPLAY':
                 self.game.player2.from_string(remessage)
-                if not self.getPlayer2:
-                    if self.game.player2.name == 'Character 2':
-                        self.player2 = Character2(character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
-                    if self.game.player2.name == 'Character 1':
-                        self.player2 = Character1(character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
-
-                    self.getPlayer2 = True
 
         except Exception as e:
             print("Error:", e)
 
     def run(self):
-        while self.game.game_over == 0:
+        while self.game.game_over == 0 and self.game.retrunMenu == -1:
             self.game.run()
             self.send(str(self.game.player1))
 

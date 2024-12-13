@@ -18,6 +18,7 @@ class Player:
         self.block_def  = False
         self.block_kick = False
         self.tag_name = 'fighter'
+        self.ready = False
 
     def load_images(self, strNam):
         self.walkRight = [py.image.load(f'assets/{strNam}_running{i}.png') for i in range(1, 6)]
@@ -280,8 +281,9 @@ class Player:
             str(self.energy),         # 22
             str(self.skill1),         # 23
             str(self.hitbox),         # 24
-            str(self.dame),            # 25
-            str(self.energy_recover)  # 26
+            str(self.dame),           # 25
+            str(self.energy_recover), # 26
+            str(self.ready)           # 27
         ]
         return ",".join(player_info)
 
@@ -314,3 +316,4 @@ class Player:
         self.hitbox         = int(values[24])
         self.dame           = int(values[25])
         self.energy_recover = float(values[26])
+        self.ready          = values[27].lower() == 'true'

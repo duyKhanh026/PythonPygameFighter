@@ -1,6 +1,7 @@
 import math
 import pygame as py
 import numpy as np
+import random
 from classes.player import Player
 from classes.character1 import Character1
 from classes.character2 import Character2
@@ -32,9 +33,9 @@ class Game_play:
             self.player1 = Character2(character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         if self.isOnline:
             if p2_name == 'Character 2':
-                self.player2 = Character2(character2_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+                self.player2 = Character2(character2_folder, 300, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
             else :
-                self.player2 = Character1(character1_folder, 1100, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
+                self.player2 = Character1(character1_folder, 300, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
         else :
             if p2_name == 'Character 2':
                 self.player2 = Character2(character2_folder, 1100, 150, BLUE, py.K_LEFT, py.K_RIGHT, py.K_UP, py.K_b, py.K_n, py.K_m, py.K_p, 'R')
@@ -221,12 +222,19 @@ class Game_play:
         self.screen.blit(fighter, btn_fighter2)
         self.screen.blit(fighter, (btn_fighter1[0] * 2.46 + choice_box_size, btn_fighter1[1]))
 
+        # Lựa chọn chọn fighter
         if self.player1.name != '':
-            # Lựa chọn chọn fighter
             self.drawStyleRect(370 if self.player1.name == 'Character 1' else 370 + choice_box_size, 400)
         if self.player2.name != '':
-            # Lựa chọn chọn fighter
             self.drawStyleRect(815 if self.player2.name == 'Character 1' else 815 + choice_box_size, 400)
+
+        if self.isOnline:
+            if self.player1.ready:
+                text = font.render('Ready', True, GREEN)
+                self.screen.blit(text, (txt_fighter1[0], txt_fighter1[1] + SCREEN_HEIGHT // 4))
+            if self.player2.ready:
+                text = font.render('Ready', True, GREEN)
+                self.screen.blit(text, (txt_fighter2[0], txt_fighter2[1] + SCREEN_HEIGHT // 4))
 
     # Function to draw a button
     def draw_button(self, text, position):
@@ -255,6 +263,13 @@ class Game_play:
         self.clock.tick(60)
         py.display.update()
 
+        if self.player1.name != '' and self.player2.name != '':
+            if self.player1.ready and self.player2.ready:
+                self.settingClicked = not self.settingClicked
+                self.reset()
+                if abs(self.player1.rect.x - self.player2.rect.x) <= 100:
+                    self.player1.rect.x = random.randint(300, 1100)
+
         for event in py.event.get():
             if event.type == py.QUIT:
                 self.game_over = -1
@@ -266,14 +281,15 @@ class Game_play:
             elif event.type == py.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = py.mouse.get_pos()
                 # Xử lý lúc nấn nút open/close setting
-                if self.player1.name != '' and self.player2.name != '' and self.playing:
-                    if btn_setting[0] <= mouse_x <= (btn_setting[0] + box_setting):
-                        if btn_setting[1] <= mouse_y <= (btn_setting[1] + box_setting):
-                            self.settingClicked = not self.settingClicked
-                            if self.game_over != 0:
-                                self.player1.name = ''  
-                                self.player2.name = ''
-                                self.playing = False
+                if self.player1.name != '' and self.player2.name != '':
+                    if self.playing:
+                        if btn_setting[0] <= mouse_x <= (btn_setting[0] + box_setting):
+                            if btn_setting[1] <= mouse_y <= (btn_setting[1] + box_setting):
+                                self.settingClicked = not self.settingClicked
+                                if self.game_over != 0:
+                                    self.player1.name = ''  
+                                    self.player2.name = ''
+                                    self.playing = False
 
                 if self.settingClicked:
                     if btn_play[0] <= mouse_x <= (btn_play[0] + BUTTON_WIDTH):
@@ -288,8 +304,11 @@ class Game_play:
                         if self.player1.name != '' and self.player2.name != '':
                             if btn_play[1] <= mouse_y <= (btn_play[1] + BUTTON_HEIGHT):
                                 if not self.playing or self.game_over != 0:
-                                    self.reset()
-                                self.settingClicked = not self.settingClicked
+                                    if self.isOnline:
+                                        self.player1.ready = True
+                                    else:
+                                        self.reset()
+                                        self.settingClicked = not self.settingClicked
                         else :
                             self.notification = 'Not selected enough fighters.'
 

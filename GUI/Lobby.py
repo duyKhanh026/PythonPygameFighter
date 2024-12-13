@@ -201,8 +201,9 @@ class Lobby:
         self.draw_waiting_room()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                # pygame.quit()
+                self.option = 3
+                return
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 5:  # Cuộn lên
                     if self.scroll_pos < len(self.room_list) - min(self.table_height // 60, len(self.room_list)):
@@ -267,12 +268,13 @@ class Lobby:
         if self.creating_room:  
             create_room_form = CreateRoomForm(self.screen, self.client_socket)
             
-            while create_room_form.running:
+            while create_room_form.option == 0:
                 create_room_form.run()  # Vẽ form nhập liệu
 
-            # waitingR = WaitingRoom2(self.screen, self.selected_room_code, self.client_socket, create_room_form.input_text)
-            # while waitingR.running:
-            #     waitingR.run()
-            Player_client(self.client_socket, self.screen).run()
-            self.option=3
-            self.creating_room= False
+            if create_room_form.option == 1:
+                Player_client(self.client_socket, self.screen).run()
+                self.option=3
+                self.creating_room = False
+            else :
+                self.creating_room = False
+                self.room_created = False

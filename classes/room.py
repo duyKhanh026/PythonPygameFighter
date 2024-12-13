@@ -37,17 +37,3 @@ class RoomClient:
 
     def close_connection(self):
         self.client_socket.close()
-
-# Sử dụng
-if __name__ == "__main__":
-    # Tạo một đối tượng RoomClient
-    room_client = RoomClient()
-
-    # Tạo một đối tượng Room
-    room = Room("ABC123", "Room 1", 2)
-    
-    # Gọi phương thức create_room để gửi dữ liệu phòng tới server
-    room_client.create_room(room)
-
-    # Đóng kết nối
-    room_client.close_connection()
