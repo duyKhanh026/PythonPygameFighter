@@ -6,7 +6,6 @@ import socket
 import json
 from GUI.create_room import CreateRoomForm
 from classes.hostData import StringList
-from GUI.WaitingRoom import WaitingRoom2
 from GUI.client import Player_client
 from Values.values import *
 
@@ -77,7 +76,7 @@ class Lobby:
                         self.room_list.append(new_room)
 
         except Exception as e:
-            print("Error:", e)
+            print("Errorrrrrrrrrr:", e)
 
         self.scroll_pos = 0
 
@@ -247,11 +246,12 @@ class Lobby:
                 # Tăng số lượng người chơi trong phòng lên 1
                 selected_room_name['players'] = str(data['player'])
 
-                # waitingR = WaitingRoom2(self.screen, self.selected_room_code, self.client_socket, selected_room_name['name'])
-                Player_client(self.client_socket, self.screen).run()
-                # while waitingR.running:
-                #     waitingR.run()
-                self.option = 3
+                client_obj = Player_client(self.client_socket, self.screen)
+                client_obj.run()
+                if client_obj.codems == 1: # do mất chủ phòng
+                    self.option = 4
+                else :
+                    self.option = 3
 
         # Nút "Create Room"
         elif self.option == 2:  

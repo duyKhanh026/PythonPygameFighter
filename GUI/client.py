@@ -9,9 +9,10 @@ class Player_client:
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
         self.HEADER = 4096
         self.client = client
-        self.goingroom = False
+        self.opn_has_entered = False
         self.own_room = own_room
         self.game = Game_play(screen, True, own_room=self.own_room)
+        self.codems = 0
 
     def send(self, msg):
         try:
@@ -20,20 +21,28 @@ class Player_client:
             else:
                 self.client.sendall(json.dumps("pler/" + msg).encode())
             remessage = self.client.recv(4096).decode()
-            print(remessage)
+            # print(remessage)
             if not remessage == 'NOPLAY':
                 self.game.player2.from_string(remessage)
-                self.goingroom = True
-            elif self.goingroom and not self.own_room:
-                self.client.sendall(json.dumps(self.DISCONNECT_MESSAGE).encode())
-                self.game.retrunMenu == 1
-                self.game.game_over = -1
-        
+                self.opn_has_entered = True
+                if self.own_room:
+                    self.game.notification = "Opponent has connected."
+
+            elif self.opn_has_entered: 
+                if self.own_room:
+                    self.game.player2.name = ''
+                    self.game.settingClicked = True
+                    self.game.playing = False
+                    self.game.notification = "The opponent has lost connection."
+                    self.opn_has_entered = False
+                else:
+                    self.codems = 1 # code nhận bt chủ phòng đã rời đi
+                    self.game.retrunMenu = 1
         except Exception as e:
             print("Error:", e)
 
     def run(self):
-        while self.game.game_over == 0 and self.game.retrunMenu == -1:
+        while self.game.retrunMenu == -1 and self.codems == 0:
             self.game.run()
             self.send(str(self.game.player1))
         self.send(self.DISCONNECT_MESSAGE)

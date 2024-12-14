@@ -3,7 +3,6 @@ from GUI.client import Player_client
 from GUI.menu import Menu
 from GUI.lobby import Lobby
 from Values.values import *
-import json
 
 class Main: 
     def run(self):
@@ -20,10 +19,10 @@ class Main:
             if menu.play_option == 2:
                 try:
                     lobby = Lobby(menu.screen)
-                    while lobby.option != 3:
+                    while lobby.option < 3:
                         lobby.run()
-                    lobby.client_socket.sendall(json.dumps("!DISCONNECT").encode())
-                    lobby.option = -1
+                    if lobby.option == 4:
+                        menu.notification = 'The host has lost connection.'
                 except:
                     menu.notification = 'Server not found'                
             menu.play_option = -1

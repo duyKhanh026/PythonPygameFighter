@@ -1,4 +1,3 @@
-import random
 from classes.player import Player
 from classes.character1 import Character1
 from classes.character2 import Character2
@@ -26,9 +25,9 @@ class Game_play:
         p1_name = self.player1.name
         p2_name = self.player2.name
         if p1_name == 'Character 1':
-            self.player1 = Character1(character1_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+            self.player1 = Character1(character1_folder, 300 if self.own_room else 1100, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         else:
-            self.player1 = Character2(character2_folder, 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+            self.player1 = Character2(character2_folder, 300 if self.own_room else 1100, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         if self.isOnline:
             if p2_name == 'Character 2':
                 self.player2 = Character2(character2_folder, 300, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
@@ -48,13 +47,12 @@ class Game_play:
 
         self.player1.own_room = "YE" if self.own_room else "NO"
 
-        self.playing = True
-
     def reset(self):
         self.game_over = 0
-        self.screen = py.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.clock = py.time.Clock()
+        self.player1.ready = False
+        self.player2.ready = False
         self.setCharacter()
+        self.playing = True
 
     # thực hiện xác nhận player thực hiện đánh thường hoặc đá
     def attack_confirmation(self, player, x, y):
@@ -156,9 +154,7 @@ class Game_play:
                 handle_attack(player, self.player2 if player == self.player1 else self.player1, True)
                 self.pushed_side(player, self.player2 if player == self.player1 else self.player1)
 
-            if player.rect.y > SCREEN_HEIGHT:
-                self.game_over = (1 if player == self.player1 else 2) 
-            elif player.health <= 0:
+            if player.health <= 0:
                 self.game_over = (1 if player == self.player1 else 2) 
 
         self.attack_confirmation(self.player1, 10, toadoInfo)
@@ -202,7 +198,7 @@ class Game_play:
         font = py.font.SysFont(font_use, 32)
 
         # Phần cho thông báo
-        text_surface = font.render("Notice: " + self.notification, True, WHITE)
+        text_surface = font.render("Notice: " + self.notification, True, RED)
         text_rect = text_surface.get_rect(topleft=(310, 105))
         self.screen.blit(text_surface, text_rect)
 
@@ -246,13 +242,22 @@ class Game_play:
         self.screen.blit(text_surface, text_rect)
 
     def run(self):
+        if self.isOnline and self.settingClicked:
+            if self.player1.ready and self.player2.ready:
+                self.settingClicked = False
+                self.reset()
+
         if self.game_over == 0:
             self._update_ui()
             for player in [self.player1, self.player2]:
                 player.draw(self.screen)
 
             if self.game_over != 0:
-                textEnd = "PLAYER 1 WIN" if self.game_over == 2 else "PLAYER 2 WIN"
+                textEnd = ''
+                if self.isOnline:
+                    textEnd = "YOU WIN" if self.game_over == 2 else "YOU LOST"
+                else:
+                    textEnd = "PLAYER 1 WIN" if self.game_over == 2 else "PLAYER 2 WIN"
                 text = py.font.SysFont(None, 100).render(textEnd, True, BLUE)
                 text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3))
                 self.screen.blit(text, text_rect)
@@ -263,17 +268,11 @@ class Game_play:
         self.clock.tick(60)
         py.display.update()
 
-        if self.player1.name != '' and self.player2.name != '':
-            if self.player1.ready and self.player2.ready:
-                self.settingClicked = not self.settingClicked
-                self.reset()
-                if abs(self.player1.rect.x - self.player2.rect.x) <= 100:
-                    self.player1.rect.x = random.randint(300, 1100)
-
         for event in py.event.get():
             if event.type == py.QUIT:
                 self.game_over = -1
                 if self.isOnline:
+                    self.retrunMenu = 1
                     return
                 else:
                     py.quit()
@@ -287,8 +286,11 @@ class Game_play:
                             if btn_setting[1] <= mouse_y <= (btn_setting[1] + box_setting):
                                 self.settingClicked = not self.settingClicked
                                 if self.game_over != 0:
-                                    self.player1.name = ''  
+                                    if not self.isOnline:
+                                        self.player1.name = ''
                                     self.player2.name = ''
+                                    self.player1.health = 100
+                                    self.player2.health = 100
                                     self.playing = False
 
                 if self.settingClicked:
@@ -309,6 +311,8 @@ class Game_play:
                                     else:
                                         self.reset()
                                         self.settingClicked = not self.settingClicked
+                                else:
+                                    self.settingClicked = not self.settingClicked
                         else :
                             self.notification = 'Not selected enough fighters.'
 

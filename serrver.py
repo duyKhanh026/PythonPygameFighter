@@ -50,7 +50,7 @@ def handle_room_client(conn, addr):
 		msg = conn.recv(4096).decode(FORMAT)
 		if msg:
 			# Hiển thị dữ liệu nhận được từ client room
-			print(f"[{addr}]: {msg}")
+			# print(f"[{addr}]: {msg}")
 			data = json.loads(msg)
 			if data == DISCONNECT_MESSAGE:
 				my_string_list.remove_string(str(get_portt(addr)))
