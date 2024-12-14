@@ -20,9 +20,12 @@ class Menu:
 
         self.notification = ''
 
-        self.btnPlayOffline = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT)
-        self.btnPlayOnline = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT // 2 + BUTTON_HEIGHT + BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT)
-        self.btnExit = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, SCREEN_HEIGHT // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.btnPlayOffline = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, 
+            SCREEN_HEIGHT // 2, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.btnPlayOnline = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, 
+            SCREEN_HEIGHT // 2 + BUTTON_HEIGHT + BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.btnExit = pygame.Rect((SCREEN_WIDTH - BUTTON_WIDTH) // 2, 
+            SCREEN_HEIGHT // 2 + (BUTTON_HEIGHT + BUTTON_MARGIN) * 2, BUTTON_WIDTH, BUTTON_HEIGHT)
 
     # Function to draw a button
     def draw_button(self, text, btn):
