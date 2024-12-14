@@ -25,9 +25,9 @@ class Game_play:
         p1_name = self.player1.name
         p2_name = self.player2.name
         if p1_name == 'Character 1':
-            self.player1 = Character1(character1_folder, 300 if self.own_room else 1100, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+            self.player1 = Character1(character1_folder, 1100 if self.own_room else 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         else:
-            self.player1 = Character2(character2_folder, 300 if self.own_room else 1100, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
+            self.player1 = Character2(character2_folder, 1100 if self.own_room else 300, 150, RED, py.K_a, py.K_d, py.K_w, py.K_g, py.K_h, py.K_j, py.K_e, 'L')
         if self.isOnline:
             if p2_name == 'Character 2':
                 self.player2 = Character2(character2_folder, 300, 150, BLUE, None,   None,   None,   None,   None,   None, None, 'R')
@@ -129,10 +129,10 @@ class Game_play:
         # # vẽ sọc trắng lên màn hình
         line_spacing = 50
         for y in range(0, SCREEN_HEIGHT, line_spacing):
-            py.draw.line(self.screen, BLACK, (0, y), (SCREEN_WIDTH, y))
+            py.draw.line(self.screen, BLACK1, (0, y), (SCREEN_WIDTH, y))
         line_spacing_vertical = 50
         for x in range(0, SCREEN_WIDTH, line_spacing_vertical):
-            py.draw.line(self.screen, BLACK, (x, 0), (x, SCREEN_HEIGHT))
+            py.draw.line(self.screen, BLACK1, (x, 0), (x, SCREEN_HEIGHT))
 
     def _update_ui(self):
         self.backgr()
