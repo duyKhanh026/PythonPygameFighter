@@ -19,29 +19,6 @@ server.bind(ADDR)
 my_string_list = StringList()
 conns = []
 
-
-def handle_client(conn, addr):
-	print("[NEW CONNECTION] {addr} connected.")
-
-	connected = True
-	while connected:
-		msg_length = conn.recv(HEADER).decode(FORMAT)
-		if msg_length:
-			msg_length = int(msg_length)
-			msg = conn.recv(msg_length).decode(FORMAT)
-			if msg == DISCONNECT_MESSAGE:
-				my_string_list.remove_string(str(get_portt(addr)))
-				connected = False
-
-			# print(f"[{addr}] {msg}")
-			senback = "NOPLAY"
-			if connected:
-				my_string_list.add_string(str(get_portt(addr)), msg)
-				senback = my_string_list.get_coordinate(str(get_portt(addr)))
-			conn.send(str(senback).encode(FORMAT))
-
-	# conn.close()
-
 def handle_room_client(conn, addr):
 	print(f"[NEW ROOM CONNECTION] {addr} connected.")
 	connected = True
@@ -80,14 +57,6 @@ def handle_room_client(conn, addr):
 					print(f"[ERROR] Invalid JSON format: {e}")
 
 	conn.close()
-
-def extract_after_chat(string):
-	keyword = "chat/"
-	index = string.find(keyword)
-	if index != -1:
-		return string[index + len(keyword):]
-	else:
-		return None
 
 def extract_pler(string):
 	keyword = "pler/"
